@@ -1,0 +1,241 @@
+{
+	"info": {
+		"_postman_id": "52f5ad57-7ee1-4c40-97ad-85edf34e2e7b",
+		"name": "하천범람 시뮬레이션",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "14229287",
+		"_collection_link": "https://dsudnr96.postman.co/workspace/onpoom-lx-pjt-dt-api~a0cde29d-7928-48ab-ac88-2ba808eb1cce/collection/14229287-52f5ad57-7ee1-4c40-97ad-85edf34e2e7b?action=share&source=collection_link&creator=14229287"
+	},
+	"item": [
+		{
+			"name": "하천범람 분석 저장",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"devUser\",\r\n    \"simulNm\":\"하천범람분석명1\",\r\n    \"address\":\"주소1\",\r\n    \"area\":\"면적\",\r\n    \"geom\":\"영역지정데이터\",\r\n    \"geomFilePath\":\"영역 분석 파일 경로\",\r\n    \"geomFileNm\":\"영역 분석 파일 명\",\r\n    \"brkLineFilePath\":\"하천 중심선 및 경계선 파일 경로\",\r\n    \"brkLineFileNm\":\"하천 중심선 및 경계선 파일 명\",\r\n    \"graphFilePath\":\"유량 수문 곡선 파일 경로\",\r\n    \"graphFileNm\":\"유량 수문 곡선 파일 명\",\r\n    \"leveeLineFilePath\":\"제방선 파일 경로\",\r\n    \"leveeLineFileNm\":\"제방선 파일 명\",\r\n    \"riverBoundaryFilePath\":\"하천 경계 파일 경로\",\r\n    \"riverBoundaryFileNm\":\"하천 경계 파일 명\",\r\n    \"rghnsCffcnt\":\"조도계수\",\r\n    \"frctnSlpn\":\"하도경사값\",\r\n    \"cmptnIntvl\":\"분석컴퓨테이션간격\",\r\n    \"riverBoundarys\":[\r\n        {\r\n            \"type\":\"high\",\r\n            \"lineGeom\":\"영역지정데이터\"\r\n        },\r\n        {\r\n            \"type\":\"low\",\r\n            \"lineGeom\":\"영역지정데이터\"\r\n        },\r\n        {\r\n            \"type\":\"low\",\r\n            \"lineGeom\":\"영역지정데이터\"\r\n        }\r\n    ],\r\n    \"riverLeveeLines\":[\r\n        {\r\n            \"name\":\"제방선1\",\r\n            \"height\":\"20\",\r\n            \"lineGeom\":\"영역지정데이터\"\r\n        },\r\n        {\r\n            \"name\":\"제방선2\",\r\n            \"height\":\"10\",\r\n            \"lineGeom\":\"영역지정데이터\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{local}}/dtapi/rhino-flood",
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "하천범람 분석 리스트",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{local}}/dtapi/rhino-flood/list/0/10",
+					"host": [
+						"{{local}}"
+					],
+					"path": [
+						"dtapi",
+						"rhino-flood",
+						"list",
+						"0",
+						"10"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-01-01",
+							"disabled": true
+						},
+						{
+							"key": "endDate",
+							"value": "2023-12-12",
+							"disabled": true
+						},
+						{
+							"key": "simulStat",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "simulNm",
+							"value": "a",
+							"disabled": true
+						}
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "하천범람 분석 상세",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{local}}/dtapi/rhino-flood/Simul1700640579601",
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "하천범람 분석 선택 삭제",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ids\":[\"Simul1700640446232\", \"Simul1700195084597\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{local}}/dtapi/rhino-flood",
+					"host": [
+						"{{local}}"
+					],
+					"path": [
+						"dtapi",
+						"rhino-flood"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-01-01",
+							"disabled": true
+						},
+						{
+							"key": "endDate",
+							"value": "2023-12-12",
+							"disabled": true
+						},
+						{
+							"key": "simulStat",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "simulNm",
+							"value": "a",
+							"disabled": true
+						}
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "라이노 스케줄러 -> 등록된 하천범람 분석 요청",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{local}}/dtapi/rhino-flood/current",
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "라이노 스케줄러 -> 결과 저장",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"simulId\":\"Simul1700640579601\",\r\n    \"simulStat\":\"2\",\r\n    \"rsltMsg\":\"이유 없는 성공1\",\r\n    \"flMaxVal\":\"유량 최대 값\",\r\n    \"flMinVal\":\"유량 최소 값\",\r\n    \"analysisTime\":\"분석 시간\",\r\n    \"rsltGeom\":\"범람 영역\",\r\n    \"files\": [\r\n        {\r\n            \"path\":\"/파일/경로\" ,\r\n            \"name\":\"파일명\",\r\n            \"size\":1000,\r\n            \"ext\":\"glb\"\r\n        },\r\n        {\r\n            \"path\":\"/파일/경로\" ,\r\n            \"name\":\"파일명\",\r\n            \"size\":1000,\r\n            \"ext\":\"glb\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{local}}/dtapi/rhino-flood/result",
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		}
+	]
+}
