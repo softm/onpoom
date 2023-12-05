@@ -1,0 +1,133 @@
+{
+	"info": {
+		"_postman_id": "40a32142-889a-4067-ad37-3421d8ca0586",
+		"name": "시각화",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "14229287",
+		"_collection_link": "https://dsudnr96.postman.co/workspace/onpoom-lx-pjt-dt-api~a0cde29d-7928-48ab-ac88-2ba808eb1cce/collection/14229287-40a32142-889a-4067-ad37-3421d8ca0586?action=share&source=collection_link&creator=14229287"
+	},
+	"item": [
+		{
+			"name": "시각화 저장",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fileName\": \"helloName\",\r\n    \"attrValue\": \"position\",\r\n    \"attrArr\": [\r\n        \"position\",\r\n        \"height\"\r\n    ],\r\n    \"coordinate\": \"EPSG:4326\",\r\n    \"visualType\": 1,\r\n    \"layerData\": {\r\n        \"type\": \"Point\",\r\n        \"data\": [\r\n            {\r\n                \"geometry\": {\r\n                    \"coordinates\": [\r\n                        126.82823448353793,\r\n                        35.779560433897\r\n                    ],\r\n                    \"type\": \"Point\"\r\n                },\r\n                \"id\": \"multi_point.1\",\r\n                \"type\": \"Feature\",\r\n                \"properties\": {\r\n                    \"name\": \"point2\",\r\n                    \"id\": 2,\r\n                    \"height\": \"120\"\r\n                }\r\n            },\r\n            {\r\n                \"geometry\": {\r\n                    \"coordinates\": [\r\n                        126.82905982020212,\r\n                        35.77829338586543\r\n                    ],\r\n                    \"type\": \"Point\"\r\n                },\r\n                \"id\": \"multi_point.2\",\r\n                \"type\": \"Feature\",\r\n                \"properties\": {\r\n                    \"name\": \"point3\",\r\n                    \"id\": 3,\r\n                    \"height\": \"140\"\r\n                }\r\n            },\r\n            {\r\n                \"geometry\": {\r\n                    \"coordinates\": [\r\n                        126.83196754475755,\r\n                        35.77904537615742\r\n                    ],\r\n                    \"type\": \"Point\"\r\n                },\r\n                \"id\": \"multi_point.3\",\r\n                \"type\": \"Feature\",\r\n                \"properties\": {\r\n                    \"name\": \"point4\",\r\n                    \"id\": 4,\r\n                    \"height\": \"150\"\r\n                }\r\n            },\r\n            {\r\n                \"geometry\": {\r\n                    \"coordinates\": [\r\n                        126.83069779604338,\r\n                        35.78075535500216\r\n                    ],\r\n                    \"type\": \"Point\"\r\n                },\r\n                \"id\": \"multi_point.4\",\r\n                \"type\": \"Feature\",\r\n                \"properties\": {\r\n                    \"name\": \"point1\",\r\n                    \"id\": 1,\r\n                    \"height\": \"100\"\r\n                }\r\n            }\r\n        ]\r\n    },\r\n    \"layerStyle\": {\r\n        \"selectValue\": \"single style\",\r\n        \"fullColor\": \"#0291d0\",\r\n        \"pointSize\": 10,\r\n        \"pointOpacity\": 1,\r\n        \"outlineColor\": \"#ffffff\",\r\n        \"outlineWidth\": 0\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{local}}/dtapi/layer/visual",
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "시각화 삭제",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{local}}/dtapi/layer/visual/Layer1699004559864",
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "시각화 분석 수정",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fileName\": \"helloName\",\r\n    \"attrValue\": \"position\",\r\n    \"attrArr\": [\r\n        \"position\",\r\n        \"height\"\r\n    ],\r\n    \"coordinate\": \"EPSG:4326\",\r\n    \"visualType\": 1,\r\n    \"layerStyle\": {\r\n        \"selectValue\": \"single style\",\r\n        \"fullColor\": \"#ff0000\",\r\n        \"pointSize\": 40,\r\n        \"pointOpacity\": 1,\r\n        \"outlineColor\": \"#ffffff\",\r\n        \"outlineWidth\": 0\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{local}}/dtapi/layer/visual/Layer1699004559864",
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "시각화 분석 리스트",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fileName\": \"helloName\",\r\n    \"attrValue\": \"position\",\r\n    \"attrArr\": [\r\n        \"position\",\r\n        \"height\"\r\n    ],\r\n    \"coordinate\": \"EPSG:4326\",\r\n    \"visualType\": 1,\r\n    \"layerStyle\": {\r\n        \"selectValue\": \"single style\",\r\n        \"fullColor\": \"#ff0000\",\r\n        \"pointSize\": 40,\r\n        \"pointOpacity\": 1,\r\n        \"outlineColor\": \"#ffffff\",\r\n        \"outlineWidth\": 0\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{local}}/dtapi/layer/visual/list",
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		}
+	]
+}

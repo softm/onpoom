@@ -1,0 +1,34 @@
+{
+	"info": {
+		"_postman_id": "efcc9b4a-d994-4e4e-8c5d-e08b569c12cf",
+		"name": "공통",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "14229287",
+		"_collection_link": "https://dsudnr96.postman.co/workspace/onpoom-lx-pjt-dt-api~a0cde29d-7928-48ab-ac88-2ba808eb1cce/collection/14229287-efcc9b4a-d994-4e4e-8c5d-e08b569c12cf?action=share&source=collection_link&creator=14229287"
+	},
+	"item": [
+		{
+			"name": "공통 코드",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{local}}/dtapi/comn/RH_ANAL_STAT",
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		}
+	]
+}
