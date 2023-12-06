@@ -10,3 +10,4 @@ mkdir postgis_install -ErrorAction SilentlyContinue;
 - https://www.cockroachlabs.com/docs/stable/st_intersects
 - https://foss4g.tistory.com/1873
   
+
