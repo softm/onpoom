@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.layer.KoShpFileMapper">
+
+    <resultMap type="com.quickex.domain.layer.KoShpFile" id="EgovFileResult">
+        <result property="fileId"    column="file_id"    />
+        <result property="fileDesc"    column="file_desc"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="fileSuffix"    column="file_suffix"    />
+        <result property="fileSize"    column="file_size"    />
+        <result property="fileUploadPath"    column="file_upload_path"    />
+        <result property="fileUnzipPath"    column="file_unzip_path"    />
+        <result property="fileParentId"    column="file_parent_id"    />
+        <result property="fileShpJson"    column="file_shp_json"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectEgovFileVo">
+        select file_id, file_desc, file_name, file_suffix, file_size, file_upload_path, file_unzip_path, file_parent_id, file_shp_json, create_time, update_time, del_flag, remark from ko_shp_file
+    </sql>
+
+    <select id="selectEgovFileList" parameterType="com.quickex.domain.layer.KoShpFile" resultMap="EgovFileResult">
+        <include refid="selectEgovFileVo"/>
+        <where>
+            <if test="fileDesc != null  and fileDesc != ''"> and file_desc = #{fileDesc}</if>
+            <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}::text, '%')</if>
+            <if test="fileSuffix != null  and fileSuffix != ''"> and file_suffix = #{fileSuffix}</if>
+            <if test="fileSize != null  and fileSize != ''"> and file_size = #{fileSize}</if>
+            <if test="fileUploadPath != null  and fileUploadPath != ''"> and file_upload_path = #{fileUploadPath}</if>
+            <if test="fileUnzipPath != null  and fileUnzipPath != ''"> and file_unzip_path = #{fileUnzipPath}</if>
+            <if test="fileParentId != null  and fileParentId != ''"> and file_parent_id = #{fileParentId}</if>
+            <if test="fileShpJson != null  and fileShpJson != ''"> and file_shp_json = #{fileShpJson}</if>
+        </where>
+    </select>
+
+    <select id="selectEgovFileByFileId" parameterType="String" resultMap="EgovFileResult">
+        <include refid="selectEgovFileVo"/>
+        where file_id = #{fileId}
+    </select>
+
+    <insert id="insertEgovFile" parameterType="com.quickex.domain.layer.KoShpFile">
+        insert into egov_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fileId != null">file_id,</if>
+            <if test="fileDesc != null">file_desc,</if>
+            <if test="fileName != null">file_name,</if>
+            <if test="fileSuffix != null">file_suffix,</if>
+            <if test="fileSize != null">file_size,</if>
+            <if test="fileUploadPath != null">file_upload_path,</if>
+            <if test="fileUnzipPath != null">file_unzip_path,</if>
+            <if test="fileParentId != null">file_parent_id,</if>
+            <if test="fileShpJson != null">file_shp_json,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fileId != null">#{fileId},</if>
+            <if test="fileDesc != null">#{fileDesc},</if>
+            <if test="fileName != null">#{fileName},</if>
+            <if test="fileSuffix != null">#{fileSuffix},</if>
+            <if test="fileSize != null">#{fileSize},</if>
+            <if test="fileUploadPath != null">#{fileUploadPath},</if>
+            <if test="fileUnzipPath != null">#{fileUnzipPath},</if>
+            <if test="fileParentId != null">#{fileParentId},</if>
+            <if test="fileShpJson != null">#{fileShpJson},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateEgovFile" parameterType="com.quickex.domain.layer.KoShpFile">
+        update egov_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fileDesc != null">file_desc = #{fileDesc},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="fileSuffix != null">file_suffix = #{fileSuffix},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            <if test="fileUploadPath != null">file_upload_path = #{fileUploadPath},</if>
+            <if test="fileUnzipPath != null">file_unzip_path = #{fileUnzipPath},</if>
+            <if test="fileParentId != null">file_parent_id = #{fileParentId},</if>
+            <if test="fileShpJson != null">file_shp_json = #{fileShpJson},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where file_id = #{fileId}
+    </update>
+
+    <delete id="deleteEgovFileByFileId" parameterType="String">
+        delete from egov_file where file_id = #{fileId}
+    </delete>
+
+    <delete id="deleteEgovFileByFileIds" parameterType="String">
+        delete from egov_file where file_id in
+        <foreach item="fileId" collection="array" open="(" separator="," close=")">
+            #{fileId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	">
+    <!--  properties -->
+    <context:property-placeholder location="file:${catalina.home}/appconf/admin-manager/application.properties"/>
+    <!-- redis datasouse -->
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!-- Maximum idle -->
+        <property name="maxIdle" value="${redis.pool.maxIdle}" />
+        <!-- Maximum number of empty connections -->
+        <property name="maxTotal" value="${redis.pool.maxTotal}" />
+        <!-- Maximum waiting time -->
+        <property name="maxWaitMillis" value="${redis.pool.maxWaitMillis}" />
+        <!-- When the connection is returned, check whether the connection is successful-->
+        <property name="testOnBorrow" value="${redis.pool.testOnBorrow}" />
+        <!-- When data is returned, check whether the connection is successful -->
+        <property name="testOnReturn" value="${redis.pool.testOnReturn}" />
+    </bean>
+
+    <!-- Spring-redis Connection pool management factory -->
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <!-- IP address -->
+        <property name="hostName" value="${redis.master.ip}" />
+        <!-- Port number -->
+        <property name="port" value="${redis.master.port}" />
+        <property name="password" value="${redis.master.password}" />
+        <!-- The timeout is 2000 by default-->
+        <property name="timeout" value="${redis.master.timeout}" />
+        <!-- Connection pool configuration reference -->
+        <property name="poolConfig" ref="poolConfig" />
+        <!-- usePool：Use connection pool -->
+        <property name="usePool" value="true"/>
+    </bean>
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory" />
+        <property name="keySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <property name="valueSerializer">
+            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+        </property>
+        <property name="hashKeySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <property name="hashValueSerializer">
+            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+        </property>
+    </bean>
+</beans>

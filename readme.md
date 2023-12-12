@@ -156,6 +156,7 @@ http://103.7.190.103/portal/main.do
 ID : B60177  / PW : gyen6488!2(효두6488!2)
 
 http://106.245.249.226:8087/koreaFront
+http://106.245.249.226:8087/map/
 
 LXP_manager/lxpf4321!
 

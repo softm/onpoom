@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.stage2.KoTerrainEditMapper">
+
+    <select id="page" resultType="java.util.LinkedHashMap">
+        select
+        id as "id",
+        user_account as "userAccount",
+        to_char(create_time , 'yyyy-MM-dd HH24:MI:SS') as "createTime ",
+        terrain_name as "terrainName",
+        build_name as "buildName",
+        terrain_height as "terrainHeight",
+        test_height as "testHeight",
+        st_astext(geom)  as "geom",
+        img  as "img"
+        from ko_terrain_edit
+        <where>
+            <if test="entity.terrainName != null and entity.terrainName != ''">
+                and terrain_name like concat('%', #{entity.terrainName}, '%')
+            </if>
+            <if test="entity.startDate != null and entity.startDate != ''">
+                and create_time  &gt;= to_timestamp(#{entity.startDate},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="entity.endDate != null and entity.endDate != ''">
+                and create_time &lt;= to_timestamp(#{entity.endDate},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="1==1">
+                and user_account =  #{entity.userAccount}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+</mapper>

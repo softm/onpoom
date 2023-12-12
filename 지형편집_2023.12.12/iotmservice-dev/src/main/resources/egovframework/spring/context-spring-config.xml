@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+     http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd
+	">
+
+	<context:component-scan base-package="com.quickex" annotation-config="true"/>
+
+	<!--application.properties-->
+	<context:property-placeholder location="file:${catalina.home}/appconf/admin-manager/application.properties"/>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${db.driverClassName}"/>
+		<property name="url" value="${db.url}"/>
+		<property name="username" value="${db.username}"/>
+		<property name="password" value="${db.password}"/>
+		<!-- Initial value at connection pool startup -->
+		<property name="initialSize" value="${db.initialSize}"/>
+
+		<!-- Maximum idle value After a peak time, the connection pool can slowly release some unused connections until they are reduced to maxidle -->
+		<property name="maxIdle" value="${db.maxIdle}"/>
+		<!-- Minimum idle value When the number of idle connections is less than the threshold, the connection pool will apply for some connections in advance to avoid too late to apply when the flood peak comes -->
+		<property name="minIdle" value="${db.minIdle}"/>
+		<!--#Give a simple SQL statement to verify -->
+		<!--<property name="validationQuery" value="select getdate()" />-->
+		<property name="defaultAutoCommit" value="${db.defaultAutoCommit}"/>
+		<!-- Reclaim abandoned (generally forgotten) databases and connect to the connection pool -->
+		<!--<property name="removeAbandoned" value="true" />-->
+		<!-- How long does the database connection not need to be taken back into the connection pool as abandoned -->
+		<!--<property name="removeAbandonedTimeout" value="120" />-->
+		<!-- #The timeout of the connection. The default is half an hour。 -->
+		<property name="minEvictableIdleTimeMillis" value="${db.minEvictableIdleTimeMillis}"/>
+
+		<!--# The running time interval of the invalidation check thread should be less than the MySQL default-->
+		<property name="timeBetweenEvictionRunsMillis" value="40000"/>
+		<!--# Check whether the connection is valid-->
+		<property name="testWhileIdle" value="true"/>
+	</bean>
+	<!--update myabtisplus-->
+	<bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<!--<property name="mapperLocations" value="classpath*:egovframework/sqlmap/*Mapper.xml"/>-->
+		<property name="mapperLocations" value="classpath*:egovframework/sqlmap/**/*Mapper.xml"/>
+		<!--<property name="configLocation" value="classpath:egovframework/spring/context-mybatis-config.xml"/>-->
+		<property name="configLocation" value="classpath:egovframework/sqlmap/context-mybatis-config.xml"/>
+
+		<!--<property  name="configLocation">-->
+			<!--<bean class="com.baomidou.mybatisplus.core.MybatisConfiguration">-->
+				<!--<property name="cacheEnabled" value="true"/>-->
+				<!--<property name="lazyLoadingEnabled" value="true"/>-->
+				<!--<property name="multipleResultSetsEnabled" value="true"/>-->
+				<!--<property name="useColumnLabel" value="true"/>-->
+				<!--<property name="defaultExecutorType" value="REUSE"/>-->
+				<!--<property name="defaultStatementTimeout" value="25000"/>-->
+				<!--<property name="mapUnderscoreToCamelCase" value="true"/>-->
+				<!--<property name="callSettersOnNulls" value="true"/>-->
+				<!--<property name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>-->
+			<!--</bean>-->
+		<!--</property>-->
+
+
+
+		<property name="typeAliasesPackage" value="com.quickex.*"/>
+		<!-- paging -->
+		<property name="plugins">
+			<array>
+				<bean class="com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor" />
+			</array>
+		</property>
+		<!-- Global configuration injection -->
+		<property name="globalConfig" ref="globalConfig" />
+	</bean>
+	<bean id="globalConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+		<property name="dbConfig" ref="dbConfig"/>
+	</bean>
+	<bean id="dbConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig">
+		<property name="keyGenerator" ref="keyGenerator"/>
+	</bean>
+	<bean id="keyGenerator" class="com.baomidou.mybatisplus.extension.incrementer.DB2KeyGenerator"/>
+	<bean name="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.quickex.mapper"/>
+	</bean>
+
+	<!-- To use @ transactional for declarative transaction management, you need to declare the following line -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+	<!-- transaction management -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="rollbackOnCommitFailure" value="true"/>
+	</bean>
+
+	<!-- Configure section -->
+	<aop:config>
+		<aop:pointcut id="transactionPointcut" expression="execution(* com.quickex.service..*.*(..))"/>
+		<aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice"/>
+	</aop:config>
+	<!-- Transaction management properties -->
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED"/>
+			<tx:method name="append*" propagation="REQUIRED"/>
+			<tx:method name="save*" propagation="REQUIRED"/>
+			<tx:method name="update*" propagation="REQUIRED"/>
+			<tx:method name="modify*" propagation="REQUIRED"/>
+			<tx:method name="edit*" propagation="REQUIRED"/>
+			<tx:method name="insert*" propagation="REQUIRED"/>
+			<tx:method name="delete*" propagation="REQUIRED"/>
+			<tx:method name="remove*" propagation="REQUIRED"/>
+			<tx:method name="repair" propagation="REQUIRED"/>
+
+			<tx:method name="get*" propagation="REQUIRED" read-only="true"/>
+			<tx:method name="find*" propagation="REQUIRED" read-only="true"/>
+			<tx:method name="load*" propagation="REQUIRED" read-only="true"/>
+			<tx:method name="search*" propagation="REQUIRED" read-only="true"/>
+			<tx:method name="datagrid*" propagation="REQUIRED" read-only="true"/>
+
+			<tx:method name="*" propagation="REQUIRED" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- Profile upload -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!--The maximum size of the uploaded file, in bytes -->
+		<property name="maxUploadSize" value="17367648787"></property>
+		<!-- Code of uploaded file -->
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<!--<property name="defaultEncoding" value="EUC_KR"></property>-->
+	</bean>
+
+</beans>

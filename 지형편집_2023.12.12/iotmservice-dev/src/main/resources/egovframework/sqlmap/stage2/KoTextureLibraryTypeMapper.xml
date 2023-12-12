@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.stage2.KoTextureLibraryTypeMapper">
+
+    <select id="publiclist" resultType="java.util.LinkedHashMap">
+        select
+        id as "id",
+        user_account as "userAccount",
+        to_char(create_time , 'yyyy-MM-dd HH24:MI:SS') as "createTime",
+        img_name as "imgName",
+        img_url as "imgUrl",
+        img_type as "imgType",
+        is_public as "isPublic",
+        tree_id  as "treeId"
+        from ko_texture_library_data
+        <where>
+            <if test="1==1">
+                and tree_id =  #{typeId}
+            </if>
+            <if test="name != null and name != ''">
+                and img_name like concat('%', #{name}, '%')
+            </if>
+        </where>
+        <if test="sortType != null">
+            <if test="sortType == 1">
+                order by create_time asc
+            </if>
+            <if test="sortType == 2">
+                order by img_name asc
+            </if>
+        </if>
+    </select>
+
+    <select id="userlist" resultType="java.util.LinkedHashMap">
+        select
+        id as "id",
+        user_account as "userAccount",
+        to_char(create_time , 'yyyy-MM-dd HH24:MI:SS') as "createTime",
+        img_name as "imgName",
+        img_url as "imgUrl",
+        img_type as "imgType",
+        is_public as "isPublic",
+        tree_id  as "treeId"
+        from ko_texture_library_data
+        <where>
+            <if test="1==1">
+                and tree_id =  #{typeId}
+            </if>
+            <if test="name != null and name != ''">
+                and img_name like concat('%', #{name}, '%')
+            </if>
+            <if test="1==1">
+                and user_account =  #{userAccount}
+            </if>
+        </where>
+        <if test="sortType != null">
+            <if test="sortType == 1">
+                order by create_time asc
+            </if>
+            <if test="sortType == 2">
+                order by img_name asc
+            </if>
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.layer.KoLayerServiceMapper">
+
+    <resultMap type="com.quickex.domain.layer.KoLayerService" id="KoLayerServiceResult">
+        <id property="Id" column="id"/>
+        <result property="serviceName" column="service_name"/>
+        <result property="createUser" column="create_user"/>
+        <result property="layerType" column="layer_type"/>
+        <result property="serviceUri" column="service_uri"/>
+        <result property="isDefault" column="is_default"/>
+        <result property="treeId" column="tree_id"/>
+        <result property="sort" column="sort"/>
+    </resultMap>
+
+    <select id="getMaxSort" parameterType="String" resultType="Integer">
+        SELECT
+            (SELECT
+            sort
+        FROM
+            ko_layer_service
+        WHERE
+            tree_id = #{treeId}
+            AND sort IS NOT NULL
+        ORDER BY
+            sort DESC
+            LIMIT 1) +1 as sort
+        FROM
+            ko_layer_service LIMIT 1
+    </select>
+
+    <select id="getImpactComparisonList" resultType="com.quickex.domain.layer.KoLayerService">
+
+        with recursive digui as
+                           (
+                               select *
+                               from ko_menu_catalog
+                               where parent_id = '-1'
+                                 and province_id = #{provinceId}
+                               union all
+                               select ko_menu_catalog.*
+                               from digui
+                                        join ko_menu_catalog on digui.id = ko_menu_catalog.parent_id
+                           )
+        select service.id,
+               service.service_name,
+               service.create_time,
+               service.create_user,
+               ko_dict_data.dict_label layer_type,
+               service.service_uri,
+               service.is_default,
+               service.tree_id,
+               service.sort,
+               service.min_x,
+               service.min_y,
+               service.max_x,
+               service.max_y,
+               service.min_level,
+               service.max_level,
+               service.tiles_path,
+               service.impact_comparison,
+               service.monomer_selection,
+               service.template_url,
+               service.color_matching_switch,
+               service.positioning_function_switch,
+               service.alias,
+               service.edit_shp_height_switch,
+               service.shp_height
+        from ko_layer_service service
+                 left join ko_dict_data
+                           on service.layer_type = ko_dict_data.dict_code and ko_dict_data.dict_type = 'layer_style'
+        where impact_comparison = 1
+          and tree_id in (select id from digui)
+    </select>
+
+
+    <select id="listNew" resultType="com.quickex.domain.layer.KoLayerService">
+        select ko_layer_service.*,
+        ko_dict_data.dict_label as layer_type_name,
+        ko_organization.item_name as organization_name
+        from ko_layer_service
+        left join ko_dict_data
+          on ko_dict_data.dict_code = ko_layer_service.layer_type  and ko_dict_data.dict_type = 'layer_style'
+        left join ko_organization
+          on ko_organization.id = ko_layer_service.organization_id
+        <where>
+            <if test="1==1">
+                and ko_layer_service.tree_id = #{entity.treeId}
+            </if>
+            <if test="entity.resourceType != null and entity.resourceType != ''">
+                and ko_layer_service.resource_type like concat('%', #{entity.resourceType}, '%')
+            </if>
+            <if test="entity.organizationId != null and entity.organizationId != ''">
+                and ko_layer_service.organization_id = #{entity.organizationId}
+            </if>
+            <if test="entity.createUser != null and entity.createUser != ''">
+                and ko_layer_service.create_user like concat('%', #{entity.createUser}, '%')
+            </if>
+            <if test="entity.layerType != null and entity.layerType != ''">
+                and ko_layer_service.layer_type = #{entity.layerType}
+            </if>
+            <if test="entity.kssj != null and entity.kssj != ''">
+                and ko_layer_service.create_time &gt;= to_timestamp(#{entity.kssj},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="entity.jssj != null and entity.jssj != ''">
+                and ko_layer_service.create_time &lt;= to_timestamp(#{entity.jssj},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+        </where>
+        ORDER by create_time desc
+    </select>
+
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.user.KoRoleMapper">
+
+    <select id="userList" resultType="com.quickex.domain.user.KoRole">
+        select *,
+        CASE (select count(*) from ko_user_role where user_id=#{role.account} and role_id = ko_role.id)
+        WHEN 0 THEN false
+        ELSE true END is_checked
+        ,(select item_name from ko_organization where id = ko_role.provice_id) as provice_name
+        ,(select item_name from ko_organization where id = ko_role.city_id) as city_name
+        from ko_role
+        <where>
+            <if test="role.roleType != null and role.roleType != ''">
+                and ko_role.role_type = #{role.roleType}
+            </if>
+        </where>
+    </select>
+
+    <select id="list" resultType="com.quickex.domain.user.KoRole">
+        select *
+        ,(select item_name from ko_organization where id = ko_role.provice_id) as provice_name
+        ,(select item_name from ko_organization where id = ko_role.city_id) as city_name
+        from ko_role
+        <where>
+            <if test="role.roleType != null and role.roleType != ''">
+                and ko_role.role_type = #{role.roleType}
+            </if>
+            <if test="role.roleName != null and role.roleName != ''">
+                and ko_role.role_name like concat('%', #{role.roleName}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <delete id="deleteUserRole" parameterType="java.lang.Integer">
+        delete from  ko_user_role where role_id not in (select id from ko_role)
+    </delete>
+    <delete id="deleteRoleMenu" parameterType="java.lang.Integer">
+        delete from  ko_role_menu where role_id not in (select id from ko_role)
+    </delete>
+
+
+</mapper>

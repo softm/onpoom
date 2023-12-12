@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.mapfile.KoMapFileTypeMapper">
+
+    <resultMap id="TreeResultMap" type="com.quickex.domain.mapfile.KoMapFileType">
+        <result column="id" property="id"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <collection property="children" select="nextNoteTree" column="id" ></collection>
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.quickex.domain.mapfile.KoMapFileType">
+        <result column="id" property="id"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="nextNoteTree" resultMap="TreeResultMap">
+        select
+           *
+        from ko_map_file_type
+        where parent_id = #{id}
+        order by sort asc
+    </select>
+    <select id="getTreeByParentId" resultMap="TreeResultMap">
+        select
+         *
+        from ko_map_file_type
+        <where>
+            <if test="1==1">
+                and is_admin=1
+            </if>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="id == null || id == ''">
+                and parent_id='-1'
+            </if>
+        </where>
+        order by sort asc
+    </select>
+
+
+    <select id="getUserList" resultMap="BaseResultMap">
+       select *  from ko_map_file_type where is_admin=0 and create_user= #{createUser} order by create_time asc
+    </select>
+
+
+    <select id="getAllChildren" resultMap="BaseResultMap">
+
+
+
+        <!--<if test="id != null and id != ''">-->
+            <!--with recursive digui as-->
+            <!--(-->
+            <!--select *-->
+            <!--from ko_map_file_type-->
+            <!--where id = #{id}-->
+            <!--union all-->
+            <!--select ko_map_file_type.*-->
+            <!--from digui-->
+            <!--join ko_map_file_type on digui.id = ko_map_file_type.parent_id-->
+            <!--)-->
+            <!--select *-->
+            <!--from digui-->
+            <!--order by sort asc-->
+        <!--</if>-->
+        <!--<if test="id == null || id == ''">-->
+            <!--select * from ko_map_file_type order by create_time desc-->
+        <!--</if>-->
+    </select>
+
+
+</mapper>

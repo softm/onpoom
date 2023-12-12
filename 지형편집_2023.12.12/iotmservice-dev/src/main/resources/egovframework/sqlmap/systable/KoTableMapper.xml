@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.systable.KoTableMapper">
+
+    <select id="sysTablelist" resultType="java.util.LinkedHashMap">
+        WITH temp_table AS(
+        select relname as tb_name,cast(obj_description(relfilenode,'pg_class') as varchar) as comment from pg_class c
+        where relname in (select tablename from pg_tables where schemaname='public' and position('_2' in tablename)=0)
+        ),
+        temp_table1 AS(
+        select
+        tb_name,
+        comment
+        from temp_table where tb_name like 'ko_%' or tb_name like 'com_%'
+        )
+        select
+        tb_name as "tbName",
+        comment
+        from temp_table1
+        <if test="tableName != null and tableName != ''">
+         where tb_name  like concat('%', #{tableName} , '%')
+        </if>
+
+    </select>
+
+    <select id="userTableList" resultType="java.util.LinkedHashMap">
+        WITH temp_table AS(
+        select relname as tb_name,cast(obj_description(relfilenode,'pg_class') as varchar) as comment from pg_class c
+        where relname in (select tablename from pg_tables where schemaname='public' and position('_2' in tablename)=0)
+        ),
+        temp_table1 AS(
+        select
+        tb_name,
+        comment
+        from temp_table where (tb_name not like 'ko_%' and tb_name not like 'com_%')
+        )
+        select
+        tb_name as "tbName",
+        comment
+        from temp_table1
+        <if test="tableName != null and tableName != ''">
+            where tb_name  like concat('%', #{tableName}, '%')
+        </if>
+    </select>
+
+    <select id="tableFieldList" resultType="java.util.LinkedHashMap">
+        select a.attname as name,
+               format_type(a.atttypid,a.atttypmod) as type,
+               (case
+                    when atttypmod-4>0 then atttypmod-4
+                    else 0
+                   end) as length,
+               (case
+                    when (select count(*) from pg_constraint where conrelid = a.attrelid and conkey[1]=attnum and contype='p')>0  then 'Y'
+                    else 'N'
+                   end) as "isPK",
+               (case
+                    when a.attnotnull=true  then 'N'
+                    else 'Y'
+                   end) as "isNull",
+               col_description(a.attrelid,a.attnum) as comment
+        from  pg_attribute a
+        where attstattarget=-1 and attrelid = (select oid from pg_class where relname = #{tableName})
+    </select>
+
+    <select id="tableIndexList" resultType="java.util.LinkedHashMap">
+        select
+            A.INDEXNAME as name,
+            A.INDEXDEF as def,
+            B.AMNAME as function
+        from
+            PG_AM B left join PG_CLASS F on
+                B.OID = F.RELAM left join PG_STAT_ALL_INDEXES E on
+                F.OID = E.INDEXRELID left join PG_INDEX C on
+                E.INDEXRELID = C.INDEXRELID left outer join PG_DESCRIPTION D on
+                C.INDEXRELID = D.OBJOID,
+            PG_INDEXES A
+        where
+            A.SCHEMANAME = E.SCHEMANAME
+          and A.TABLENAME = E.RELNAME
+          and A.INDEXNAME = E.INDEXRELNAME
+          and E.SCHEMANAME = 'public'
+          and E.RELNAME = #{tableName} ;
+    </select>
+
+    <select id="tableForeignkeyList" resultType="java.util.LinkedHashMap">
+        SELECT x.table_name as "tbName",
+               x.column_name as "colName"
+        FROM information_schema.key_column_usage x
+                 INNER JOIN (SELECT t.relname,
+                                    a.conname
+                             FROM pg_constraint a
+                                      INNER JOIN pg_class ft
+                                                 ON ft.oid = a.confrelid
+                                      INNER JOIN pg_class t
+                                                 ON t.oid = a.conrelid
+                             WHERE a.contype = 'f'
+                               AND a.confrelid =
+                                   (select e.oid
+                                    from pg_class e
+                                    where e.relname = #{tableName} )
+        ) tp
+                            ON (x.table_name = tp.relname AND
+                                x.constraint_name = tp.conname)
+    </select>
+
+    <update id="updateTableComment">
+        comment on table ${tableName} is ${comment}
+
+    </update>
+
+    <update id="updateTableFieldComment">
+        comment on COLUMN ${tableName}.${fieldName} IS ${comment}
+    </update>
+
+    <select id="selectTableData" resultType="java.util.LinkedHashMap">
+        select * from ${tableName}
+    </select>
+
+    <insert id="insertSql">
+       ${sql}
+    </insert>
+
+    <update id="updateSql">
+        ${sql}
+    </update>
+
+    <delete id="deleteSql">
+        ${sql}
+    </delete>
+
+
+    <select id="ordinaryUserList" resultType="java.util.LinkedHashMap">
+        select usesysid as "userId",usename as "userName" from pg_user where usesuper = false
+        <if test="userName != null and userName != ''">
+            and usename like concat('%', #{userName} , '%')
+        </if>
+    </select>
+
+    <select id="userTableAuthorityList" resultType="java.util.LinkedHashMap">
+        WITH temp_table AS (
+            select table_name
+            from information_schema.table_privileges
+            where grantee = #{userName}
+              and table_schema = 'public'
+            GROUP by table_name
+        )
+
+        select table_name AS "tableName",
+               (
+                   case
+                       WHEN (select count(*)
+                             from information_schema.table_privileges
+                             where grantee = #{userName}
+                               and table_schema = 'public'
+                               and privilege_type = 'INSERT'
+                               and table_name = tb.table_name) > 0 then 'Y'
+                       else 'N' END
+                   )      AS "insert",
+               (
+                   case
+                       WHEN (select count(*)
+                             from information_schema.table_privileges
+                             where grantee = #{userName}
+                               and table_schema = 'public'
+                               and privilege_type = 'DELETE'
+                               and table_name = tb.table_name) > 0 then 'Y'
+                       else 'N' END
+                   )      AS "delete",
+               (
+                   case
+                       WHEN (select count(*)
+                             from information_schema.table_privileges
+                             where grantee = #{userName}
+                               and table_schema = 'public'
+                               and privilege_type = 'UPDATE'
+                               and table_name = tb.table_name) > 0 then 'Y'
+                       else 'N' END
+                   )      AS "update",
+               (
+                   case
+                       WHEN (select count(*)
+                             from information_schema.table_privileges
+                             where grantee = #{userName}
+                               and table_schema = 'public'
+                               and privilege_type = 'SELECT'
+                               and table_name = tb.table_name) > 0 then 'Y'
+                       else 'N' END
+                   )      AS "select"
+        from temp_table tb
+    </select>
+
+    <select id="TableAuthority" resultType="java.util.LinkedHashMap">
+        WITH temp_table AS (
+            select table_name
+            from information_schema.table_privileges
+            where grantee = #{userName}
+              and table_schema = 'public'
+            GROUP by table_name
+        )
+
+        select table_name AS "tableName",
+               (
+                   case
+                       WHEN (select count(*)
+                             from information_schema.table_privileges
+                             where grantee = #{userName}
+                               and table_schema = 'public'
+                               and privilege_type = 'INSERT'
+                               and table_name = tb.table_name) > 0 then 'Y'
+                       else 'N' END
+                   )      AS "insert",
+               (
+                   case
+                       WHEN (select count(*)
+                             from information_schema.table_privileges
+                             where grantee = #{userName}
+                               and table_schema = 'public'
+                               and privilege_type = 'DELETE'
+                               and table_name = tb.table_name) > 0 then 'Y'
+                       else 'N' END
+                   )      AS "delete",
+               (
+                   case
+                       WHEN (select count(*)
+                             from information_schema.table_privileges
+                             where grantee = #{userName}
+                               and table_schema = 'public'
+                               and privilege_type = 'UPDATE'
+                               and table_name = tb.table_name) > 0 then 'Y'
+                       else 'N' END
+                   )      AS "update",
+               (
+                   case
+                       WHEN (select count(*)
+                             from information_schema.table_privileges
+                             where grantee = #{userName}
+                               and table_schema = 'public'
+                               and privilege_type = 'SELECT'
+                               and table_name = tb.table_name) > 0 then 'Y'
+                       else 'N' END
+                   )      AS "select"
+        from temp_table tb WHERE table_name = #{tableName}
+    </select>
+
+
+    <select id="lod25GridList" resultType="java.util.LinkedHashMap">
+        select gridid,count(*) from lod25middlep where gridid is not null and administrative=#{administrative} and city =#{city}  group by gridid
+    </select>
+
+    <select id="lod25GridFileNameList" resultType="java.util.LinkedHashMap">
+        select * from lod25middlep where gridid = #{gridid}
+    </select>
+
+
+</mapper>

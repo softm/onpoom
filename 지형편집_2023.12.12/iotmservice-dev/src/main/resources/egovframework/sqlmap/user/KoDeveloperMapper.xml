@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.user.KoDeveloperMapper">
+
+    <select id="developerPage" resultType="com.quickex.domain.user.KoDeveloper">
+        select *,
+        (select item_name from ko_organization where ko_developer.organization_id = id) as organization_name
+        from ko_developer
+        <where>
+            <if test="entity.serverName != null and entity.serverName != ''">
+                and ko_developer.server_name like concat('%', #{entity.serverName}, '%')
+            </if>
+            <if test="entity.organizationId != null and entity.organizationId != ''">
+                and ko_developer.organization_id  = #{entity.organizationId}
+            </if>
+            <if test="entity.developerName != null and entity.developerName != ''">
+                and ko_developer.developer_name  like concat('%', #{entity.developerName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="developerInfo" resultType="com.quickex.domain.user.KoDeveloper">
+        select *,
+               (select item_name from ko_organization where ko_developer.organization_id = id) as organization_name
+        from ko_developer where id = #{id}
+    </select>
+</mapper>

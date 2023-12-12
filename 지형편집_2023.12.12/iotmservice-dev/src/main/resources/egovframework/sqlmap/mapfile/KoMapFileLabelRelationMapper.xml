@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.mapfile.KoMapFileLabelRelationMapper">
+
+
+    <!--Map model file label.-->
+    <resultMap id="BaseResult" type="com.quickex.domain.mapfile.Dto.KoMapFileLabelRelationDto">
+        <result column="id" property="id"/>
+        <result column="dict_name" property="name"/>
+        <result column="is_checked" property="isCheck"/>
+        <result column="info_id" property="fileId"/>
+    </resultMap>
+
+    <!--label-->
+    <select id="getLables" resultMap="BaseResult">
+        select dict.dict_code  id,
+               dict.dict_value dict_name,
+               info.file_id         info_id,
+               CASE
+                   WHEN info.id is null THEN 0
+                   ELSE 1 END  is_checked
+        from ko_dict_data dict
+                 left join ko_map_file_label_relation info on dict.dict_code = info.label
+            and info.file_id = #{id}
+        where dict.dict_type = 'map_file_label'
+    </select>
+
+</mapper>

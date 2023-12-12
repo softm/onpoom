@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.layer.KoMenuCatalogMapper">
+
+    <!--Tree structure mapping for background management and display-->
+    <resultMap id="TreeResultMap" type="com.quickex.domain.layer.KoMenuCatalog">
+        <result column="id" property="id"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="is_leaf" property="isLeaf"/>
+        <result column="name" property="name"/>
+        <result column="comment" property="comment"/>
+        <result column="sort" property="sort"/>
+        <result column="province_id" property="provinceId"/>
+        <result column="img_path" property="imgPath"/>
+        <collection property="children" select="nextNoteTree" column="id" ></collection>
+    </resultMap>
+    <!--Child nodes of the query tree-->
+    <select id="nextNoteTree" resultMap="TreeResultMap">
+        select
+            id,parent_id,is_leaf,name,comment,sort,province_id,img_path,service_state
+        from ko_menu_catalog
+        where parent_id = #{id}
+        	<!-- and service_state = '1' -->
+        order by sort asc
+    </select>
+    <!--Query tree menu-->
+    <select id="getTreeByParentId" resultMap="TreeResultMap">
+        <if test="name != null and name != ''">
+            select
+            id,parent_id,is_leaf,name,comment,sort,province_id,img_path,service_state
+            from ko_menu_catalog
+            <!-- where province_id = #{id} and name like concat('%', #{name}, '%')-->
+                        where name like concat('%', #{name}, '%')
+                            <!-- and service_state = '1' -->
+            order by sort asc
+        </if>
+        <if test="name == null or name == ''">
+            select
+            id,parent_id,is_leaf,name,comment,sort,province_id,img_path,service_state
+            from ko_menu_catalog
+            <!-- where province_id = #{id} and parent_id='-1'-->
+            where parent_id='-1'
+        		<!-- and service_state = '1' -->
+            order by sort asc
+        </if>
+    </select>
+
+    <!--     The new format is combined into a tree according to the pattern tree and files given by the user's front end    -->
+    <resultMap id="TreeResultMapUserWebDto" type="com.quickex.domain.layer.KoMenuCatalogUserWebDto">
+        <result column="id" property="treeId"/>
+        <result column="uid" property="key"/>
+        <result column="name" property="title"/>
+        <result column="url" property="url"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="service_id" property="serviceId"/>
+        <result column="data_type" property="dataType"/>
+        <result column="dict_label" property="layerType"/>
+        <result column="disable_checkbox" property="disableCheckbox"/>
+        <result column="min_x" property="minX"/>
+        <result column="min_y" property="minY"/>
+        <result column="max_x" property="maxX"/>
+        <result column="max_y" property="maxY"/>
+        <result column="min_level" property="minLevel"/>
+        <result column="max_level" property="maxLevel"/>
+        <result column="impact_comparison" property="impactComparison"/>
+        <result column="monomer_selection" property="monomerSelection"/>
+        <result column="template_url" property="templateUrl"/>
+        <collection property="children" select="nextNoteTree_userwebdto" column="id" ></collection>
+    </resultMap>
+
+    <select id="getTreeByParentIdForUserWebDto" resultMap="TreeResultMapUserWebDto">
+        WITH temp_table AS(
+        select
+        id,parent_id,name,'' url,'1' data_type,'0' is_default,'' service_id,sort,'' uid,'' layer_type
+        ,'' min_x,'' min_y,'' max_x,'' max_y,null min_level,null max_level
+        ,null impact_comparison,null monomer_selection,province_id,null template_url
+        from ko_menu_catalog where service_state = '1'
+        union all
+        select
+        '-' id ,tree_id as parent_id,service_name as name,service_uri as  url,'2' data_type,is_default,id service_id,sort sort,'' uid,layer_type
+        ,min_x,min_y,max_x,max_y,min_level,max_level
+        ,impact_comparison,monomer_selection,null province_id,template_url
+        from ko_layer_service where service_state = '1'
+        )
+
+        select
+        temp_table.name,
+        temp_table.id,
+        temp_table.parent_id,
+        CASE temp_table.data_type
+        WHEN '1' THEN temp_table.id
+        WHEN '2' THEN temp_table.service_id
+        ELSE '' END uid,
+        CASE temp_table.data_type
+        WHEN '1' THEN true
+        WHEN '2' THEN false
+        ELSE null END disable_checkbox,
+        temp_table.url,
+        temp_table.data_type,
+        temp_table.is_default,
+        temp_table.service_id,
+        temp_table.sort,
+        ko_dict_data.dict_label
+        ,temp_table.min_x,
+        temp_table.min_y,
+        temp_table.max_x,
+        temp_table.max_y,
+        temp_table.min_level,
+        temp_table.max_level,
+        temp_table.impact_comparison,
+        temp_table.monomer_selection,
+        temp_table.template_url
+        from temp_table
+        left join ko_dict_data on temp_table.layer_type = ko_dict_data.dict_code and ko_dict_data.dict_type ='layer_style'
+        where province_id = #{id} and  parent_id='-1'
+        <!--<where>-->
+            <!--<if test="id != null and id != ''">-->
+                <!--and id = #{id}-->
+            <!--</if>-->
+            <!--<if test="id == null || id == ''">-->
+                <!--and parent_id='-1'-->
+            <!--</if>-->
+            <!--and data_type='1'-->
+        <!--</where>-->
+        order by sort asc
+    </select>
+    <select id="nextNoteTree_userwebdto" resultMap="TreeResultMapUserWebDto">
+        WITH temp_table AS(
+            select
+                id,parent_id,name,'' url,'1' data_type,'0' is_default,'' service_id,sort,'' uid,'' layer_type
+                 ,'' min_x,'' min_y,'' max_x,'' max_y,null min_level,null max_level
+                 ,null impact_comparison,null monomer_selection,province_id,null template_url
+            from ko_menu_catalog
+            union all
+            select
+                '-' id ,tree_id as parent_id,service_name as name,service_uri as  url,'2' data_type,is_default,id service_id,sort sort,'' uid,layer_type
+                ,min_x,min_y,max_x,max_y,min_level,max_level
+                ,impact_comparison,monomer_selection,null province_id,template_url
+            from ko_layer_service
+        )
+        select
+            temp_table.name,
+            temp_table.id,
+            temp_table.parent_id,
+            CASE temp_table.data_type
+                WHEN '1' THEN temp_table.id
+                WHEN '2' THEN temp_table.service_id
+                ELSE '' END uid,
+            CASE temp_table.data_type
+                WHEN '1' THEN true
+                WHEN '2' THEN false
+                ELSE null END disable_checkbox,
+            temp_table.url,
+            temp_table.data_type,
+            temp_table.is_default,
+            temp_table.service_id,
+            temp_table.sort,
+            ko_dict_data.dict_label
+            ,temp_table.min_x,
+            temp_table.min_y,
+            temp_table.max_x,
+            temp_table.max_y,
+            temp_table.min_level,
+            temp_table.max_level,
+            temp_table.impact_comparison,
+            temp_table.monomer_selection,
+            temp_table.template_url
+        from temp_table
+        left join ko_dict_data on temp_table.layer_type = ko_dict_data.dict_code and ko_dict_data.dict_type ='layer_style'
+        where parent_id = #{id}
+        order by sort asc
+    </select>
+
+    <!-- ******************************* test  test **************************************** -->
+    <resultMap id="TreeResultMapUserWebDto1" type="com.quickex.domain.layer.KoMenuCatalogUserWebDto">
+        <result column="id" property="treeId"/>
+        <result column="uid" property="key"/>
+        <result column="name" property="title"/>
+        <result column="url" property="url"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="service_id" property="serviceId"/>
+        <result column="data_type" property="dataType"/>
+        <result column="dict_label" property="layerType"/>
+        <result column="disable_checkbox" property="disableCheckbox"/>
+        <result column="min_x" property="minX"/>
+        <result column="min_y" property="minY"/>
+        <result column="max_x" property="maxX"/>
+        <result column="max_y" property="maxY"/>
+        <result column="min_level" property="minLevel"/>
+        <result column="max_level" property="maxLevel"/>
+        <result column="impact_comparison" property="impactComparison"/>
+        <result column="monomer_selection" property="monomerSelection"/>
+        <result column="template_url" property="templateUrl"/>
+        <result column="img_path" property="imgPath"/>
+        <collection property="children" select="nextNoteTree_userwebdto1" column="id" ></collection>
+    </resultMap>
+    <resultMap id="TreeResultMapUserWebDto2" type="com.quickex.domain.layer.KoMenuCatalogUserWebDto">
+        <result column="id" property="treeId"/>
+        <result column="uid" property="key"/>
+        <result column="name" property="title"/>
+        <result column="url" property="url"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="service_id" property="serviceId"/>
+        <result column="data_type" property="dataType"/>
+        <result column="dict_label" property="layerType"/>
+        <result column="disable_checkbox" property="disableCheckbox"/>
+        <result column="min_x" property="minX"/>
+        <result column="min_y" property="minY"/>
+        <result column="max_x" property="maxX"/>
+        <result column="max_y" property="maxY"/>
+        <result column="min_level" property="minLevel"/>
+        <result column="max_level" property="maxLevel"/>
+        <result column="impact_comparison" property="impactComparison"/>
+        <result column="monomer_selection" property="monomerSelection"/>
+        <result column="template_url" property="templateUrl"/>
+        <result column="color_matching_switch" property="colorMatchingSwitch"/>
+        <result column="positioning_function_switch" property="positioningFunctionSwitch"/>
+        <result column="alias" property="alias"/>
+        <result column="edit_shp_height_switch" property="editShpHeightSwitch"/>
+        <result column="shp_height" property="shpHeight"/>
+        <result column="is_collection" property="isCollection"/>
+        <result column="center_x" property="centerX"/>
+        <result column="center_y" property="centerY"/>
+        <result column="tiles_vague_switch" property="tilesVagueSwitch"/>
+        <!--<collection property="children" select="nextNoteTree_userwebdto1" column="id" ></collection>-->
+    </resultMap>
+    <select id="getTreeByParentIdForUserWebDto1" resultMap="TreeResultMapUserWebDto1">
+        WITH temp_table AS(
+        select
+        id,parent_id,name,'' url,'1' data_type,'0' is_default,'' service_id,sort,'' uid,'' layer_type
+        ,'' min_x,'' min_y,'' max_x,'' max_y,null min_level,null max_level
+        ,null impact_comparison,null monomer_selection,province_id,null template_url,img_path
+        from ko_menu_catalog where service_state = '1'
+        )
+
+        select
+        temp_table.name,
+        temp_table.id,
+        temp_table.parent_id,
+        CASE temp_table.data_type
+        WHEN '1' THEN temp_table.id
+        WHEN '2' THEN temp_table.service_id
+        ELSE '' END uid,
+        CASE temp_table.data_type
+        WHEN '1' THEN true
+        WHEN '2' THEN false
+        ELSE null END disable_checkbox,
+        temp_table.url,
+        temp_table.data_type,
+        temp_table.is_default,
+        temp_table.service_id,
+        temp_table.sort,
+        null as dict_label,
+        temp_table.min_x,
+        temp_table.min_y,
+        temp_table.max_x,
+        temp_table.max_y,
+        temp_table.min_level,
+        temp_table.max_level,
+        temp_table.impact_comparison,
+        temp_table.monomer_selection,
+        temp_table.template_url,
+        temp_table.img_path
+        from temp_table
+      <!--    where province_id = #{id} and  parent_id='-1'-->
+        where parent_id='-1'
+        order by sort asc
+    </select>
+    <select id="nextNoteTree_userwebdto1" resultMap="TreeResultMapUserWebDto1">
+        WITH temp_table AS(
+            select
+                id,parent_id,name,'' url,'1' data_type,'0' is_default,'' service_id,sort,'' uid,'' layer_type
+                 ,'' min_x,'' min_y,'' max_x,'' max_y,null min_level,null max_level
+                 ,null impact_comparison,null monomer_selection,province_id,null template_url,img_path
+            from ko_menu_catalog where service_state = '1'
+        )
+        select
+            temp_table.name,
+            temp_table.id,
+            temp_table.parent_id,
+            CASE temp_table.data_type
+                WHEN '1' THEN temp_table.id
+                WHEN '2' THEN temp_table.service_id
+                ELSE '' END uid,
+            CASE temp_table.data_type
+                WHEN '1' THEN true
+                WHEN '2' THEN false
+                ELSE null END disable_checkbox,
+            temp_table.url,
+            temp_table.data_type,
+            temp_table.is_default,
+            temp_table.service_id,
+            temp_table.sort,
+            null as dict_label,
+            temp_table.min_x,
+            temp_table.min_y,
+            temp_table.max_x,
+            temp_table.max_y,
+            temp_table.min_level,
+            temp_table.max_level,
+            temp_table.impact_comparison,
+            temp_table.monomer_selection,
+            temp_table.template_url,
+            temp_table.img_path
+        from temp_table
+        where parent_id = #{id}
+        order by sort asc
+    </select>
+    <select id="getServiceList" resultMap="TreeResultMapUserWebDto2">
+        WITH temp_table AS(
+            select
+                '-' id ,tree_id as parent_id,service_name as name,service_uri as  url,'2' data_type,is_default,id service_id,sort sort,'' uid,layer_type
+                 ,min_x,min_y,max_x,max_y,min_level,max_level
+                 ,impact_comparison,monomer_selection,null province_id,template_url,color_matching_switch,positioning_function_switch,alias
+                 ,edit_shp_height_switch,shp_height,tiles_vague_switch
+            from ko_layer_service where service_state = '1'
+        )
+        select
+            temp_table.name,
+            temp_table.id,
+            temp_table.parent_id,
+            CASE temp_table.data_type
+                WHEN '1' THEN temp_table.id
+                WHEN '2' THEN temp_table.service_id
+                ELSE '' END uid,
+            CASE temp_table.data_type
+                WHEN '1' THEN true
+                WHEN '2' THEN false
+                ELSE null END disable_checkbox,
+            temp_table.url,
+            temp_table.data_type,
+            temp_table.is_default,
+            temp_table.service_id,
+            temp_table.sort,
+            ko_dict_data.dict_label,
+            temp_table.min_x,
+            temp_table.min_y,
+            temp_table.max_x,
+            temp_table.max_y,
+            temp_table.min_level,
+            temp_table.max_level,
+            temp_table.impact_comparison,
+            temp_table.monomer_selection,
+            temp_table.template_url,
+            temp_table.color_matching_switch,
+            temp_table.positioning_function_switch,
+            temp_table.alias,
+            temp_table.edit_shp_height_switch,
+            temp_table.shp_height,
+            temp_table.tiles_vague_switch
+
+        <if test="createUser != null and createUser != ''">
+        ,  CASE
+          (select count(*) from ko_user_layer_collection where create_user= #{createUser} and layer_id=temp_table.service_id)
+               WHEN 0 THEN false
+               ELSE true END is_collection
+        </if>
+
+        from temp_table
+                 left join ko_dict_data on temp_table.layer_type = ko_dict_data.dict_code and ko_dict_data.dict_type ='layer_style'
+        where parent_id = #{id}
+
+        <if test="layerIds != null and layerIds.size() != 0">
+            and service_id in
+            <foreach collection="layerIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        order by sort asc
+    </select>
+    <select id="getCollectionList" resultMap="TreeResultMapUserWebDto2">
+        WITH temp_table AS(
+            select
+                '-' id ,tree_id as parent_id,service_name as name,service_uri as  url,'2' data_type,is_default,id service_id,sort sort,'' uid,layer_type
+                 ,min_x,min_y,max_x,max_y,min_level,max_level
+                 ,impact_comparison,monomer_selection,null province_id,template_url,color_matching_switch,positioning_function_switch,alias
+                 ,edit_shp_height_switch,shp_height
+            from ko_layer_service where service_state = '1'
+        )
+        select
+            temp_table.name,
+            temp_table.id,
+            temp_table.parent_id,
+            temp_table.service_id uid,
+            CASE temp_table.data_type
+                WHEN '1' THEN true
+                WHEN '2' THEN false
+                ELSE null END disable_checkbox,
+            temp_table.url,
+            temp_table.data_type,
+            temp_table.is_default,
+            temp_table.service_id,
+            temp_table.sort,
+            ko_dict_data.dict_label,
+            temp_table.min_x,
+            temp_table.min_y,
+            temp_table.max_x,
+            temp_table.max_y,
+            temp_table.min_level,
+            temp_table.max_level,
+            temp_table.impact_comparison,
+            temp_table.monomer_selection,
+            temp_table.template_url,
+            temp_table.color_matching_switch,
+            temp_table.positioning_function_switch,
+            temp_table.alias,
+            temp_table.edit_shp_height_switch,
+            temp_table.shp_height,
+            true is_collection
+        from temp_table
+        left join ko_dict_data on temp_table.layer_type = ko_dict_data.dict_code and ko_dict_data.dict_type ='layer_style'
+        where service_id in (select layer_id from ko_user_layer_collection where create_user = #{createUser} )
+    </select>
+
+
+    <select id="getCsTreeServiceList" resultMap="TreeResultMapUserWebDto2">
+        WITH temp_table AS(
+        select
+        '-' id ,tree_id as parent_id,service_name as name,service_uri as  url,'2' data_type,is_default,id service_id,sort sort,'' uid,layer_type
+        ,min_x,min_y,max_x,max_y,min_level,max_level
+        ,impact_comparison,monomer_selection,null province_id,template_url,color_matching_switch,positioning_function_switch,alias
+        ,edit_shp_height_switch,shp_height,center_x,center_y
+        from ko_layer_service
+        )
+        select
+        temp_table.name,
+        temp_table.id,
+        temp_table.parent_id,
+        CASE temp_table.data_type
+        WHEN '1' THEN temp_table.id
+        WHEN '2' THEN temp_table.service_id
+        ELSE '' END uid,
+        CASE temp_table.data_type
+        WHEN '1' THEN true
+        WHEN '2' THEN false
+        ELSE null END disable_checkbox,
+        temp_table.url,
+        temp_table.data_type,
+        temp_table.is_default,
+        temp_table.service_id,
+        temp_table.sort,
+        ko_dict_data.dict_label,
+        temp_table.min_x,
+        temp_table.min_y,
+        temp_table.max_x,
+        temp_table.max_y,
+        temp_table.min_level,
+        temp_table.max_level,
+        temp_table.impact_comparison,
+    temp_table.monomer_selection,
+    temp_table.template_url,
+    temp_table.color_matching_switch,
+    temp_table.positioning_function_switch,
+    temp_table.alias,
+    temp_table.edit_shp_height_switch,
+    temp_table.shp_height
+    ,temp_table.center_x
+    ,temp_table.center_y
+    from temp_table
+    left join ko_dict_data on temp_table.layer_type = ko_dict_data.dict_code and ko_dict_data.dict_type ='layer_style'
+    where parent_id = #{id} and ko_dict_data.dict_label in ('3Dtiles','Ion3Dtiles','UrlTemplateImagery','WMSImagery','CesiumTerrain')
+    order by sort asc
+</select>
+    <resultMap id="TreeResultMapUserWebDto11" type="com.quickex.domain.layer.KoMenuCatalogUserWebDto">
+        <result column="id" property="treeId"/>
+        <result column="uid" property="key"/>
+        <result column="name" property="title"/>
+        <result column="url" property="url"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="service_id" property="serviceId"/>
+        <result column="data_type" property="dataType"/>
+        <result column="dict_label" property="layerType"/>
+        <result column="disable_checkbox" property="disableCheckbox"/>
+        <result column="min_x" property="minX"/>
+        <result column="min_y" property="minY"/>
+        <result column="max_x" property="maxX"/>
+        <result column="max_y" property="maxY"/>
+        <result column="min_level" property="minLevel"/>
+        <result column="max_level" property="maxLevel"/>
+        <result column="impact_comparison" property="impactComparison"/>
+        <result column="monomer_selection" property="monomerSelection"/>
+        <result column="template_url" property="templateUrl"/>
+        <result column="img_path" property="imgPath"/>
+        <collection property="children" select="nextNoteTree_userwebdto11" column="id" ></collection>
+    </resultMap>
+    <select id="getTreeByParentIdForUserWebDto11" resultMap="TreeResultMapUserWebDto11">
+        WITH temp_table AS(
+            select
+                id,parent_id,name,'' url,'1' data_type,'0' is_default,'' service_id,sort,'' uid,'' layer_type
+                 ,'' min_x,'' min_y,'' max_x,'' max_y,null min_level,null max_level
+                 ,null impact_comparison,null monomer_selection,null template_url,img_path
+            from ko_layer_catalog
+        )
+
+        select
+            temp_table.name,
+            temp_table.id,
+            temp_table.parent_id,
+            CASE temp_table.data_type
+                WHEN '1' THEN temp_table.id
+                WHEN '2' THEN temp_table.service_id
+                ELSE '' END uid,
+            CASE temp_table.data_type
+                WHEN '1' THEN true
+                WHEN '2' THEN false
+                ELSE null END disable_checkbox,
+            temp_table.url,
+            temp_table.data_type,
+            temp_table.is_default,
+            temp_table.service_id,
+            temp_table.sort,
+            null as dict_label,
+            temp_table.min_x,
+            temp_table.min_y,
+            temp_table.max_x,
+            temp_table.max_y,
+            temp_table.min_level,
+            temp_table.max_level,
+            temp_table.impact_comparison,
+            temp_table.monomer_selection,
+            temp_table.template_url,
+            temp_table.img_path
+        from temp_table
+        where  parent_id='-1'
+        order by sort asc
+    </select>
+    <select id="nextNoteTree_userwebdto11" resultMap="TreeResultMapUserWebDto11">
+        WITH temp_table AS(
+            select
+                id,parent_id,name,'' url,'1' data_type,'0' is_default,'' service_id,sort,'' uid,'' layer_type
+                 ,'' min_x,'' min_y,'' max_x,'' max_y,null min_level,null max_level
+                 ,null impact_comparison,null monomer_selection,null template_url,img_path
+            from ko_layer_catalog
+        )
+        select
+            temp_table.name,
+            temp_table.id,
+            temp_table.parent_id,
+            CASE temp_table.data_type
+                WHEN '1' THEN temp_table.id
+                WHEN '2' THEN temp_table.service_id
+                ELSE '' END uid,
+            CASE temp_table.data_type
+                WHEN '1' THEN true
+                WHEN '2' THEN false
+                ELSE null END disable_checkbox,
+            temp_table.url,
+            temp_table.data_type,
+            temp_table.is_default,
+            temp_table.service_id,
+            temp_table.sort,
+            null as dict_label,
+            temp_table.min_x,
+            temp_table.min_y,
+            temp_table.max_x,
+            temp_table.max_y,
+            temp_table.min_level,
+            temp_table.max_level,
+            temp_table.impact_comparison,
+            temp_table.monomer_selection,
+            temp_table.template_url,
+            temp_table.img_path
+        from temp_table
+        where parent_id = #{id}
+        order by sort asc
+    </select>
+
+
+
+    <select id="getTreeLayerAndTypeSelectRoot" resultType="com.quickex.domain.entity.LayerAndTypeSelect">
+         select
+             id,
+             name,
+             0 "type",
+             false is_checked
+         from ko_menu_catalog where parent_id = '-1'
+         order by sort asc
+    </select>
+    <select id="getTreeLayerAndTypeSelectChildren" resultType="com.quickex.domain.entity.LayerAndTypeSelect">
+        select
+            id,
+            name,
+            0 "type",
+            false is_checked
+        from ko_menu_catalog where parent_id = #{id}
+        order by sort asc
+    </select>
+    <select id="getTreeLayerAndTypeSelectService" resultType="com.quickex.domain.entity.LayerAndTypeSelect">
+        select
+               id,
+               service_name "name",
+               1 "type",
+               CASE
+                   (select count(*) from ko_role_layer_catalog where role_id= #{roleId}  and catalog_id=id)
+               WHEN 0 THEN false
+                ELSE true END is_checked
+        from ko_layer_service
+        WHERE tree_id = #{treeId}
+        order by sort asc
+    </select>
+
+
+</mapper>

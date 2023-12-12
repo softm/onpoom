@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.mapfile.KoUavModelMapper">
+
+    <select id="page" resultType="com.quickex.domain.mapfile.KoUavModel">
+        select ko_uav_model.*
+              ,ko_organization.item_name as organization_name
+        from ko_uav_model
+        left join ko_organization
+        on ko_organization.id = ko_uav_model.organization_id
+        <where>
+            <if test="entity.name != null and entity.name != ''">
+                and ko_uav_model.name like concat('%', #{entity.name}, '%')
+            </if>
+            <if test="entity.createUser != null and entity.createUser != ''">
+                and ko_uav_model.create_user like concat('%', #{entity.createUser}, '%')
+            </if>
+            <if test="entity.kssj != null and entity.kssj != ''">
+                and ko_uav_model.create_time &gt;= to_timestamp(#{entity.kssj},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="entity.jssj != null and entity.jssj != ''">
+                and ko_uav_model.create_time &lt;= to_timestamp(#{entity.jssj},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="entity.organizationId != null and entity.organizationId != ''">
+                and ko_uav_model.organization_id = #{entity.organizationId}
+            </if>
+        </where>
+        order by ko_uav_model.create_time desc
+    </select>
+
+</mapper>

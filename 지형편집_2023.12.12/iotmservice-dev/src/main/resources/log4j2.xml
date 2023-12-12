@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- status=debug You can view the assembly process of log4j -->
+<configuration status="off">
+
+    <!-- File path -->
+    <properties>
+        <!--dev-->
+        <!--<property name="Log_Home">D:/navicat/korea-admin-logs</property>-->
+        <!--test-->
+        <!--<property name="Log_Home">/data/app/koera/korea-admin-logs</property>-->
+        <!--pro-->
+        <property name="Log_Home">${sys:catalina.home}/logs/korea-admin-logs</property>
+    </properties>
+
+    <!--Define all Appenders first-->
+    <appenders>
+        <!--Configuration of output console-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--Format of output log
+            %L:：Line number in output code。
+            %M：Output the name of the method that generates log information。-->
+            <!--"%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}{FATAL=Bright Red, ERROR=Bright Magenta, WARN=Bright Yellow, INFO=Bright Green, DEBUG=Bright Cyan, TRACE=Bright White}"-->
+
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36}.%M @%L :-> %msg%xEx%n"/>
+        </Console>
+
+        <!--This will print out all the information. Every time the size exceeds size, the log of this size will be automatically saved under the folder established by year month and compressed for archiving-->
+        <RollingFile name="RollingFileInfo" fileName="${Log_Home}/info.${date:yyyy-MM-dd}.log" immediateFlush="true"
+                     filePattern="${Log_Home}/$${date:yyyy-MM}/info-%d{MM-dd-yyyy}-%i.log.gz">
+            <!--<PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36}.%M @%L :-> %msg%xEx%n"/>-->
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}][%-5level][%class{36}.%M %L] %msg%xEx%n"/>
+            <!--The console only outputs level and above information (onmatch), and others are directly rejected (onmismatch)-->
+            <filters>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="50MB"/>
+            </Policies>
+        </RollingFile>
+
+        <!--   This will print out all the information. Every time the size exceeds size, the log of this size will be automatically saved under the folder established by year month and compressed for archiving -->
+        <RollingFile name="RollingFileDebug" fileName="${Log_Home}/debug.${date:yyyy-MM-dd}.log" immediateFlush="true"
+                     filePattern="${Log_Home}/$${date:yyyy-MM}/debug-%d{MM-dd-yyyy}-%i.log.gz">
+            <!--<PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36}.%M @%L :-> %msg%xEx%n"/>-->
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}][%-5level][%class{36}.%M %L] %msg%xEx%n"/>
+            <filters>
+                <ThresholdFilter level="info" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+            </filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+        </RollingFile>
+
+        <!-- This will print out all the information. Every time the size exceeds size, the log of this size will be automatically saved under the folder established by year month and compressed for archiving -->
+        <RollingFile name="RollingFileError" fileName="${Log_Home}/error.${date:yyyy-MM-dd}.log" immediateFlush="true"
+                     filePattern="${Log_Home}/$${date:yyyy-MM}/error-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}][%-5level][%class{36}.%M %L] %msg%xEx%n"/>
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="50MB"/>
+            </Policies>
+        </RollingFile>
+
+    </appenders>
+    <!--trace<debug<info<warn<error<fatal-->
+    <!--Then define a logger. Only when a logger is defined and an appender is introduced will the appender take effect-->
+    <!--Filter out some useless debug information of spring and mybatis-->
+    <!--Additivity property of log4j: additivity, which is the flag bit of whether the child logger inherits the output source (appender) of the parent logger.
+    Specifically, by default, the child logger inherits the appender of the parent logger, that is, the child logger will be output in the appender of the parent logger.
+    If additivity is set to false, the child logger will only be output in its own appender, not in the appender of the parent logger。！-->
+    <!--<logger name="org" level="INFO" additivity="false" ></logger>-->
+    <!--<logger name="org.springframework" level="INFO" additivity="false"></logger>-->
+    <!--<logger name="org.mybatis" level="INFO" additivity="false"></logger>-->
+    <loggers>
+        <logger name="org.springframework.core" level="info">
+        </logger>
+        <logger name="org.springframework.beans" level="info">
+        </logger>
+        <logger name="org.springframework.context" level="info">
+        </logger>
+        <logger name="org.springframework.web" level="info">
+        </logger>
+        <!--Create a default root logger-->
+        <root level="info">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileDebug"/>
+            <appender-ref ref="RollingFileError"/>
+        </root>
+    </loggers>
+</configuration>

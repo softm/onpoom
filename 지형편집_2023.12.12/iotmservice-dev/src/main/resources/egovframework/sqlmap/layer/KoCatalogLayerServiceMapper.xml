@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.layer.KoCatalogLayerServiceMapper">
+
+    <select id="getKoLayerServicePage" resultType="java.util.LinkedHashMap">
+        select
+        tb.id,
+        tb.catalog_id AS "catalogId",
+        tb.layer_service_id "layerServiceId",
+        service.service_name "serviceName",
+        to_char(service.create_time, 'yyyy-MM-dd HH24:MI:SS') "createTime",
+        service.create_user "createUser",
+        service.layer_type "layerType",
+        service.service_uri "serviceUri",
+        service.is_default "isDefault",
+        service.menu_catalog_id "menuCatalogId"
+        from ko_catalog_layer_service tb
+        LEFT JOIN ko_layer_service service on tb.layer_service_id = service.id
+        <where>
+            <if test="koMenuCatalog.id != null and koMenuCatalog.id != ''">
+                and tb.catalog_id = #{koMenuCatalog.id}
+            </if>
+            <if test="koLayerService.serviceName != null and koLayerService.serviceName != ''">
+                and service.service_name like concat('%', #{koLayerService.serviceName}, '%')
+            </if>
+            <if test="koLayerService.layerType != null and koLayerService.layerType != ''">
+                and service.layer_type  like concat('%', #{koLayerService.layerType}, '%')
+            </if>
+        </where>
+        ORDER BY service.create_time DESC
+    </select>
+</mapper>

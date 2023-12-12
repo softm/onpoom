@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.user.KoUserMapper">
+
+    <select id="allUser" resultType="com.quickex.domain.user.KoUser">
+        select *,
+        (select item_name from ko_organization where ko_user.city_id = id) as city_name,
+        (select item_name from ko_organization where ko_user.area_id = id) as area_name,
+        (select item_name from ko_organization where ko_user.organization_id = id) as organization_name,
+        (select item_name from ko_organization where ko_user.department_id = id) as department_name
+        from ko_user
+        ORDER BY create_time desc
+    </select>
+
+    <select id="userPage" resultType="com.quickex.domain.user.KoUser">
+        select *,
+        (select item_name from ko_organization where ko_user.city_id = id) as city_name,
+        (select item_name from ko_organization where ko_user.area_id = id) as area_name,
+        (select item_name from ko_organization where ko_user.organization_id = id) as organization_name,
+        (select item_name from ko_organization where ko_user.department_id = id) as department_name
+               from ko_user
+        <where>
+            <if test="user.cityId != null and user.cityId != ''">
+                and ko_user.city_id = #{user.cityId}
+            </if>
+            <if test="user.areaId != null and user.areaId != ''">
+                and ko_user.area_id = #{user.areaId}
+            </if>
+            <if test="user.organizationId != null and user.organizationId != ''">
+                and ko_user.organization_id  = #{user.organizationId}
+            </if>
+            <if test="user.departmentId != null and user.departmentId != ''">
+                and ko_user.department_id  = #{user.departmentId}
+            </if>
+        </where>
+        ORDER BY create_time desc
+    </select>
+
+    <select id="userInfo" resultType="com.quickex.domain.user.KoUser">
+        select *,
+        (select item_name from ko_organization where ko_user.city_id = id) as city_name,
+        (select item_name from ko_organization where ko_user.area_id = id) as area_name,
+        (select item_name from ko_organization where ko_user.organization_id = id) as organization_name,
+        (select item_name from ko_organization where ko_user.department_id = id) as department_name
+        from ko_user where account = #{account}
+    </select>
+
+    <select id="selectRootMenuList" resultType="com.quickex.domain.user.KoMenu">
+        select
+        *
+        from ko_menu
+        where sys_type = #{sysType} and pid='-1' and menu_state = 0
+        <if test="ids != null and ids.size() != 0">
+            and id in
+            <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by order_num asc
+    </select>
+    <select id="selectChildrenMenuList" resultType="com.quickex.domain.user.KoMenu">
+        select
+        *
+        from ko_menu
+        where pid = #{pid} and menu_state = 0
+        <if test="ids != null and ids.size() != 0">
+            and id in
+            <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by order_num asc
+    </select>
+
+
+
+
+
+
+    <select id="selectMapRootMenuList" resultType="com.quickex.domain.user.MapMenuResult">
+        select
+            menu_path as id,
+            menu_describe as title,
+            icon,
+            menu_style,
+            id as menu_id,
+            pid as menu_pid,
+            menu_name,
+            menu_type
+        from ko_menu
+        where sys_type = #{sysType} and pid='-1' and menu_state = 0
+        <if test="ids != null and ids.size() != 0">
+            and id in
+            <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by order_num asc
+    </select>
+    <select id="selectMapChildrenMenuList" resultType="com.quickex.domain.user.MapMenuResult">
+        select
+        menu_path as id,
+        menu_describe as title,
+        icon,
+        menu_style,
+        id as menu_id,
+        pid as menu_pid,
+        menu_name,
+        menu_type,
+        menu_data1 as dev_route,
+        menu_data2 as pro_route,
+        menu_data3 as route_name,
+        menu_data4 as route_type
+        from ko_menu
+        where pid = #{pid} and menu_state = 0
+        <if test="ids != null and ids.size() != 0">
+            and id in
+            <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by order_num asc
+    </select>
+
+
+
+    <delete id="deleteUserRole" parameterType="java.lang.Integer">
+        delete from  ko_user_role   where user_id  not in (select account from ko_user)
+    </delete>
+    <delete id="deleteUserMenu" parameterType="java.lang.Integer">
+        delete from  ko_user_menu   where user_id  not in (select account from ko_user)
+    </delete>
+
+    <select id="allRoute" resultType="com.quickex.domain.user.MapMenuResult">
+        select
+        menu_path as id,
+        menu_describe as title,
+        icon,
+        menu_style,
+        id as menu_id,
+        pid as menu_pid,
+        menu_name,
+        menu_type,
+        menu_data1 as dev_route,
+        menu_data2 as pro_route,
+        menu_data3 as route_name,
+        menu_data4 as route_type
+        from ko_menu
+        where menu_type = 2 and sys_type = 2
+        order by order_num asc
+    </select>
+
+
+    <select id="checkUser" resultType="java.lang.Integer">
+        select count(*) from ko_user where lower(account) = lower( #{account})
+    </select>
+
+
+</mapper>

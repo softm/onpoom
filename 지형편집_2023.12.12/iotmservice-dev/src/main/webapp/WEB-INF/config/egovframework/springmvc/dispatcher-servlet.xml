@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+                http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+                http://www.springframework.org/schema/util
+                 http://www.springframework.org/schema/util/spring-util-3.2.xsd
+                ">
+    <context:component-scan base-package="com.quickex.*">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="localeChangeInterceptor" />
+            </list>
+        </property>
+    </bean>
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+    <!-- 쿠키를 이용한 Locale 이용시 <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"/> -->
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="language" />
+    </bean>
+    <!--Handling global error exception classes-->
+    <bean id="exceptionResolver" class="com.quickex.core.handler.SpringGlobalExceptionHandler"/>
+
+
+
+    <!--Configure ResponseBody to handle JSON error-->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <ref bean="stringHttpMessageConverter" />
+            <ref bean="fastJsonHttpMessageConverter" />
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <bean id="stringHttpMessageConverter"
+          class="org.springframework.http.converter.StringHttpMessageConverter">
+        <constructor-arg value="UTF-8" index="0"/>
+        <!--Avoid garbled code -->
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/plain;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="fastJsonHttpMessageConverter"
+          class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>application/json;charset=UTF-8</value>
+                <value>text/html;charset=UTF-8</value><!-- Avoid downloading JSON files in ie -->
+            </list>
+        </property>
+        <property name="features">
+            <util:list>
+                <value>WriteMapNullValue</value>
+                <value>QuoteFieldNames</value>
+                <value>WriteDateUseDateFormat</value>
+            </util:list>
+        </property>
+    </bean>
+
+
+    <!-- Return type definition -->
+    <util:list id="messageConverters">
+        <ref bean="stringHttpMessageConverter" />
+        <ref bean="fastJsonHttpMessageConverter" />
+    </util:list>
+
+    <mvc:interceptors>
+        <!-- Define interceptor -->
+        <mvc:interceptor>
+            <!-- The matching is the URL path. If it is not configured or / * *, all controllers will be intercepted -->
+            <mvc:mapping path="/**" />
+            <!-- Addresses that do not need to be intercepted -->
+            <mvc:exclude-mapping path="/login.jsp" />
+            <mvc:exclude-mapping path="/user/login" />
+            <mvc:exclude-mapping path="/App" />
+            <mvc:exclude-mapping path="/common" />
+            <mvc:exclude-mapping path="/css" />
+            <mvc:exclude-mapping path="/image" />
+            <mvc:exclude-mapping path="/js" />
+            <mvc:exclude-mapping path="/jsp" />
+            <mvc:exclude-mapping path="/kindeditor" />
+            <mvc:exclude-mapping path="/lib" />
+            <bean class="com.quickex.api.verification.AuthenticationInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+</beans>

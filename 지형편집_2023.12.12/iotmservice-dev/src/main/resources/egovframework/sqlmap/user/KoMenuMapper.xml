@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.user.KoMenuMapper">
+
+    <resultMap id="TreeResultMap" type="com.quickex.domain.user.KoMenu">
+        <result column="id" property="id"/>
+        <collection property="children" select="nextNoteTree" column="id" ></collection>
+    </resultMap>
+
+    <resultMap id="allAndRoleCheckedResult" type="com.quickex.domain.user.KoMenu">
+        <result column="id" property="id"/>
+        <collection property="children" select="nextNoteTree1" column="{id=id,roleId=role_id}" ></collection>
+    </resultMap>
+
+    <resultMap id="allAndUserCheckedResult" type="com.quickex.domain.user.KoMenu">
+        <result column="id" property="id"/>
+        <collection property="children" select="nextNoteTree2" column="{id=id,account=account}" ></collection>
+    </resultMap>
+
+    <!--all-->
+    <select id="nextNoteTree" resultMap="TreeResultMap">
+        select *
+        from ko_menu
+        where pid = #{id}
+        order by order_num asc
+    </select>
+    <select id="allMenu" resultMap="TreeResultMap">
+        select
+            *
+        from ko_menu
+        where sys_type = #{menu.sysType}  and pid='-1'
+        order by order_num asc
+    </select>
+
+    <!--all and role checked-->
+    <select id="nextNoteTree1" resultMap="allAndRoleCheckedResult">
+        select *,
+               CASE (select count(*) from ko_role_menu where role_id=#{roleId} and menu_id = ko_menu.id)
+                   WHEN 0 THEN false
+                   ELSE true END is_checked,#{roleId} as role_id
+        from ko_menu
+        where pid = #{id}
+        order by order_num asc
+    </select>
+    <select id="allAndRoleChecked" resultMap="allAndRoleCheckedResult">
+        select
+            *,
+            CASE (select count(*) from ko_role_menu where role_id=#{menu.roleId} and menu_id = ko_menu.id)
+                WHEN 0 THEN false
+                ELSE true END is_checked
+                , #{menu.roleId} as role_id
+        from ko_menu
+        where sys_type = #{menu.sysType}  and pid='-1'
+        order by order_num asc
+    </select>
+
+    <!--all and user checked-->
+    <select id="nextNoteTree2" resultMap="allAndUserCheckedResult">
+        select *
+                ,
+               CASE (select count(*) from ko_user_menu where user_id=#{account} and menu_id = ko_menu.id)
+                   WHEN 0 THEN false
+                   ELSE true END is_checked,#{account} as account
+        from ko_menu
+        where pid = #{id}
+        order by order_num asc
+    </select>
+    <select id="allAndUserChecked" resultMap="allAndUserCheckedResult">
+        select
+            *,
+            CASE (select count(*) from ko_user_menu where user_id=#{menu.account} and menu_id = ko_menu.id)
+                WHEN 0 THEN false
+                ELSE true END is_checked,#{menu.account} as account
+        from ko_menu
+        where sys_type = #{menu.sysType}  and pid='-1'
+        order by order_num asc
+    </select>
+
+    <select id="getAllPatentAndThis"  resultType="com.quickex.domain.user.KoMenu">
+        with recursive digui as
+                           (
+                               select * from ko_menu where id = #{id}
+                               union all
+                               select ko_menu.* from digui join ko_menu on ko_menu.id = digui.pid
+                           )
+
+        select * from digui
+    </select>
+
+</mapper>

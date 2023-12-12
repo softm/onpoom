@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.user.KoOrganizationMapper">
+
+    <select id="root" resultType="com.quickex.domain.user.KoOrganization">
+        select *
+        <if test="entity.itemType == 3">
+            ,(select item_name from ko_organization where id = tb.provice_id) as provice_name
+            ,(select item_name from ko_organization where id = tb.city_id) as city_name
+        </if>
+        from ko_organization as tb
+        where item_type = #{entity.itemType}
+    </select>
+
+    <select id="children" resultType="com.quickex.domain.user.KoOrganization">
+        select *
+        <if test="entity.itemType == 3">
+            ,(select item_name from ko_organization where id = tb.provice_id) as provice_name
+            ,(select item_name from ko_organization where id = tb.city_id) as city_name
+        </if>
+        from ko_organization as tb
+        where pid = #{entity.id}
+    </select>
+
+    <select id="searchList" resultType="com.quickex.domain.user.KoOrganization">
+        <if test="entity.itemType == 1">
+            select *
+            from ko_organization
+            where (item_type = 1 or item_type = 2)
+            and item_name like concat('%', #{entity.itemName}, '%')
+        </if>
+        <if test="entity.itemType == 3">
+            select *
+            <if test="entity.itemType == 3 or entity.itemType == 4">
+                ,(select item_name from ko_organization where id = tb.provice_id) as provice_name
+                ,(select item_name from ko_organization where id = tb.city_id) as city_name
+            </if>
+            from ko_organization as tb
+            where (item_type = 3 or item_type = 4)
+            and item_name like concat('%', #{entity.itemName}, '%')
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.mapfile.KoMapFileMapper">
+
+    <resultMap id="BaseResultMap" type="com.quickex.domain.mapfile.KoMapFile">
+        <result column="id" property="id"/>
+        <result column="file_id" property="fileId"/>
+        <result column="file_suffix" property="fileSuffix"/>
+        <result column="file_url" property="fileUrl"/>
+        <result column="comment" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="file_name" property="fileName"/>
+        <result column="file_size" property="fileSize"/>
+        <result column="file_type" property="fileType"/>
+        <result column="remarks" property="remarks"/>
+        <result column="is_admin" property="isAdmin"/>
+        <result column="img_path" property="imgPath"/>
+        <result column="is_collection" property="isCollection"/>
+    </resultMap>
+
+    <select id="getPageAdmin1" resultMap="BaseResultMap">
+        select ko_map_file.*
+        <if test="file.createUser != null and file.createUser != ''">
+            ,
+            CASE (select count(*) from ko_map_file_collection where create_user= #{file.createUser} and file_id=ko_map_file.id)
+            WHEN 0 THEN 0
+            ELSE 1 END is_collection
+        </if>
+        ,ko_organization.item_name as organization_name
+        from ko_map_file
+        left join ko_organization
+        on ko_organization.id = ko_map_file.organization_id
+        <where>
+            <if test="1==1">
+                and ko_map_file.is_admin='1'
+            </if>
+            <if test="file.treeId != null and file.treeId != ''">
+                and ko_map_file.tree_id = #{file.treeId}
+            </if>
+            <if test="file.fileName != null and file.fileName != ''">
+                and ko_map_file.file_name like concat('%', #{file.fileName}, '%')
+            </if>
+            <if test="file.createUser1 != null and file.createUser1 != ''">
+                and ko_map_file.create_user like concat('%', #{file.createUser1}, '%')
+            </if>
+            <if test="file.kssj != null and file.kssj != ''">
+                and ko_map_file.create_time &gt;= to_timestamp(#{file.kssj},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="file.jssj != null and file.jssj != ''">
+                and ko_map_file.create_time &lt;= to_timestamp(#{file.jssj},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="file.organizationId != null and file.organizationId != ''">
+                and ko_map_file.organization_id = #{file.organizationId}
+            </if>
+        </where>
+        <if test="file.sortType == 1">
+            order by ko_map_file.file_name asc
+        </if>
+        <if test="file.sortType == 2">
+            order by ko_map_file.create_time desc
+        </if>
+    </select>
+
+
+
+    <select id="getPageUser1" resultMap="BaseResultMap">
+        select * from ko_map_file
+        <where>
+            <if test="1==1">
+                and is_admin='0'
+            </if>
+            <if test="1==1">
+                and create_user = #{file.createUser}
+            </if>
+            <if test="file.treeId != null and file.treeId != ''">
+                and tree_id = #{file.treeId}
+            </if>
+            <if test="file.fileName != null and file.fileName != ''">
+                and file_name like concat('%', #{file.fileName}, '%')
+            </if>
+        </where>
+        <if test="file.sortType == 1">
+            order by file_name asc
+        </if>
+        <if test="file.sortType == 2">
+            order by create_time desc
+        </if>
+    </select>
+
+    <select id="getAdminRootTypeFiles" resultMap="BaseResultMap">
+        select *
+        from ko_map_file
+        where tree_id in
+              (select id from ko_map_file_type where parent_id = #{file.treeId})
+        order by create_time desc
+    </select>
+
+    <select id="getPageCollection" resultMap="BaseResultMap">
+        select *,1 is_collection from ko_map_file
+        <where>
+            <if test="1==1">
+                and id in (select file_id from ko_map_file_collection where create_user= #{file.createUser})
+            </if>
+            <if test="file.fileName != null and file.fileName != ''">
+                and file_name like concat('%', #{file.fileName}, '%')
+            </if>
+        </where>
+        <if test="file.sortType == 1">
+            order by file_name asc
+        </if>
+        <if test="file.sortType == 2">
+            order by create_time desc
+        </if>
+    </select>
+
+
+
+
+
+
+
+
+    <!--select documents-->
+    <select id="getPageUser" resultMap="BaseResultMap">
+        WITH temp_table AS(
+        select * from ko_map_file where (file_type=1 or file_type=3) and create_user &lt;&gt; #{file.createUser}
+        union all
+        select * from ko_map_file where create_user = #{file.createUser}
+        )
+        select * from temp_table
+        <where>
+            <if test="file.fileName != null and file.fileName != ''">
+                and file_name like concat('%', #{file.fileName}, '%')
+            </if>
+            <if test="file.remarks != null and file.remarks != ''">
+                and remarks like concat('%', #{file.remarks}, '%')
+            </if>
+            <if test="types != null and types.size() != 0">
+                and file_type in
+                <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="lables != null and lables.size() != 0">
+                and id in (
+                select file_id from ko_map_file_label_relation WHERE  label in
+                <foreach collection="lables" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                )
+            </if>
+        </where>
+    </select>
+    <!--select documents-->
+    <select id="getPageAdmin" resultMap="BaseResultMap">
+        WITH temp_table AS(
+        select * from ko_map_file
+        <where>
+            <if test="1==1">
+                and is_admin = '1'
+            </if>
+            <if test="file.fileName != null and file.fileName != ''">
+                and file_name like concat('%', #{file.fileName}, '%')
+            </if>
+            <if test="file.remarks != null and file.remarks != ''">
+                and remarks like concat('%', #{file.remarks}, '%')
+            </if>
+            <if test="types != null and types.size() != 0">
+                and file_type in
+                <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+  <if test="lables != null and lables.size() != 0">
+                and id in (
+                select file_id from ko_map_file_label_relation WHERE label in
+                <foreach collection="lables" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                )
+            </if>
+        </where>
+)
+     select * from temp_table where 1=1
+
+    </select>
+
+    <!--Map model file labels-->
+    <resultMap id="BaseResult" type="com.quickex.domain.mapfile.Dto.KoMapFileLabelRelationDto">
+        <result column="id" property="id"/>
+        <result column="dict_name" property="name"/>
+        <result column="is_checked" property="isCheck"/>
+        <result column="info_id" property="fileId"/>
+    </resultMap>
+    <select id="getLables" resultMap="BaseResult">
+        select dict.dict_code  id,
+               dict.dict_value dict_name,
+               info.file_id         info_id,
+               CASE
+                   WHEN info.id is null THEN 0
+                   ELSE 1 END  is_checked
+        from ko_dict_data dict
+                 left join ko_map_file_label_relation info on dict.dict_code = info.label
+            and info.file_id = #{id}
+        where dict.dict_type = 'map_file_label'
+    </select>
+
+</mapper>

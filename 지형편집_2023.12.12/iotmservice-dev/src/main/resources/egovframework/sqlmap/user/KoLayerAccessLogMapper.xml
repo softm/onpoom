@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.user.KoLayerAccessLogMapper">
+
+    <select id="serviceCount1" resultType="java.util.LinkedHashMap">
+        select dict_label,
+               (select count(*) from ko_layer_service where layer_type = ko_dict_data.dict_code)
+        from ko_dict_data where dict_type = 'layer_style'
+    </select>
+    <select id="serviceCount2" resultType="java.lang.Integer">
+        select count(*)  from ko_layer_service
+    </select>
+
+    <select id="serviceCount" resultType="java.util.LinkedHashMap">
+        select (
+        select count(*)
+        from ko_layer_service
+        where 1 = 1
+        <if test="provinceCode != null and provinceCode != ''">
+            and tree_id in (select id
+            from ko_menu_catalog
+            where province_id in
+            (select id from ko_province where province_code = #{provinceCode} limit 1))
+        </if>
+        ) as "all",
+        (
+        select count(*)
+        from ko_layer_service
+        where impact_comparison = 1
+        <if test="provinceCode != null and provinceCode != ''">
+            and tree_id in (select id
+            from ko_menu_catalog
+            where province_id in
+            (select id from ko_province where province_code = #{provinceCode} limit 1))
+        </if>
+        ) as "imageService",
+        (
+        select count(*)
+        from ko_layer_service
+        where layer_type in (select dict_code
+        from ko_dict_data
+        where dict_type = 'layer_style' and dict_label in ('3Dtiles', 'Ion3Dtiles'))
+        <if test="provinceCode != null and provinceCode != ''">
+            and tree_id in (select id
+            from ko_menu_catalog
+            where province_id in
+            (select id from ko_province where province_code = #{provinceCode} limit 1))
+        </if>
+        ) as "3dService",
+        (
+        select count(*)
+        from ko_layer_service
+        where layer_type in (select dict_code
+        from ko_dict_data
+        where dict_type = 'layer_style'
+        and dict_label in ('ArcgisTerrain', 'CesiumTerrain'))
+        <if test="provinceCode != null and provinceCode != ''">
+            and tree_id in (select id
+            from ko_menu_catalog
+            where province_id in
+            (select id from ko_province where province_code = #{provinceCode} limit 1))
+        </if>
+        ) as "terrainService"
+    </select>
+
+    <select id="RecordPage" resultType="java.util.LinkedHashMap">
+        select log.layer_province_code                    as "layerProvinceCode",
+               province.name                              as "provinceName",
+               log.user_province_code                     as "userProvinceCode",
+               log.origin                                 as "origin",
+               log.userid                                 as "userId",
+               log.layer_id                               as "layerId",
+               service.service_name                       as "layerName",
+               to_char(log.time, 'yyyy-MM-dd HH24:MI:SS') as "time"
+        from ko_layer_access_log log
+                 left join ko_province province on log.layer_province_code = province.province_code
+                 left join ko_layer_service service on log.layer_id = service.id
+        <where>
+            <if test="layerProvinceCode != null and layerProvinceCode != ''">
+                and log.layer_province_code = #{layerProvinceCode}
+            </if>
+            <if test="origin != null and origin != ''">
+                and log.origin = #{origin}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and log.time &gt;= to_timestamp(#{startDate},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and log.time &lt;= to_timestamp(#{endDate},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+        </where>
+        order by log.time desc
+    </select>
+
+    <select id="useCountByType" resultType="java.util.LinkedHashMap">
+        with temp_table as
+        (
+        select service.id,
+        service.service_name as "name",
+        ko_dict_data.dict_label as "type"
+        from ko_layer_service service
+        left join ko_dict_data on service.layer_type = ko_dict_data.dict_code and
+        ko_dict_data.dict_type = 'layer_style'
+
+        <if test="provinceCode != null and provinceCode != ''">
+            where service.tree_id in (select id
+            from ko_menu_catalog
+            where province_id in
+            (select id from ko_province where province_code = #{provinceCode} limit 1))
+        </if>
+        )
+        select dict_code as "dictCode",
+        dict_label as "dictType",
+        (
+        select count(*) from ko_layer_access_log where layer_id  in (select id from temp_table where type=tb.dict_label)
+        <if test="startDate != null and startDate != ''">
+            and time &gt;= to_timestamp(#{startDate},'yyyy-MM-dd hh24:mi:ss')
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and time &lt;= to_timestamp(#{endDate},'yyyy-MM-dd hh24:mi:ss')
+        </if>
+        ) as "count"
+        from ko_dict_data tb where dict_type='layer_style'
+    </select>
+
+    <select id="useCountByService" resultType="java.util.LinkedHashMap">
+        select id,
+        service_name as "serviceName",
+        (
+        select count(*) from ko_layer_access_log where layer_id = tb.id
+        <if test="startDate != null and startDate != ''">
+            and time &gt;= to_timestamp(#{startDate},'yyyy-MM-dd hh24:mi:ss')
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and time &lt;= to_timestamp(#{endDate},'yyyy-MM-dd hh24:mi:ss')
+        </if>
+        ) as "count"
+        from ko_layer_service tb
+        where 1 = 1
+        <if test="provinceCode != null and provinceCode != ''">
+            and tree_id in (select id
+            from ko_menu_catalog
+            where province_id in (select id from ko_province where province_code = #{provinceCode} limit 1))
+        </if>
+    </select>
+
+
+    <!--<select id="allserviceUseCountByToday" resultType="java.util.LinkedHashMap">-->
+        <!--WITH dateList AS(-->
+            <!--select '00' as str-->
+            <!--union all select '01' as str-->
+            <!--union all select '02' as str-->
+            <!--union all select '03' as str-->
+            <!--union all select '04' as str-->
+            <!--union all select '05' as str-->
+            <!--union all select '06' as str-->
+            <!--union all select '07' as str-->
+            <!--union all select '08' as str-->
+            <!--union all select '09' as str-->
+            <!--union all select '10' as str-->
+            <!--union all select '11' as str-->
+            <!--union all select '12' as str-->
+            <!--union all select '13' as str-->
+            <!--union all select '14' as str-->
+            <!--union all select '15' as str-->
+            <!--union all select '16' as str-->
+            <!--union all select '17' as str-->
+            <!--union all select '18' as str-->
+            <!--union all select '19' as str-->
+            <!--union all select '20' as str-->
+            <!--union all select '21' as str-->
+            <!--union all select '22' as str-->
+            <!--union all select '23' as str-->
+        <!--)-->
+        <!--select tb.str as key,-->
+           <!--(-->
+            <!--select count(*) from ko_layer_access_log where to_char(time, 'yyyy-MM-dd HH24') = to_char(now(), 'yyyy-MM-dd ')||tb.str-->
+            <!--) as value-->
+        <!--from dateList as tb-->
+    <!--</select>-->
+    <select id="allserviceUseCountByToday" resultType="java.util.LinkedHashMap">
+        WITH dateList AS(
+            select '00' as str
+            union all select '01' as str
+            union all select '02' as str
+            union all select '03' as str
+            union all select '04' as str
+            union all select '05' as str
+            union all select '06' as str
+            union all select '07' as str
+            union all select '08' as str
+            union all select '09' as str
+            union all select '10' as str
+            union all select '11' as str
+            union all select '12' as str
+            union all select '13' as str
+            union all select '14' as str
+            union all select '15' as str
+            union all select '16' as str
+            union all select '17' as str
+            union all select '18' as str
+            union all select '19' as str
+            union all select '20' as str
+            union all select '21' as str
+            union all select '22' as str
+            union all select '23' as str
+        )
+        select tb.str as key,
+            (
+            select count(*) from ko_api_record_login where (api = '/api/ko-user/mapLogin' or api ='/api/ko-user/adminLogin') and to_char(time, 'yyyy-MM-dd HH24') = to_char(now(), 'yyyy-MM-dd ')||tb.str
+            ) as value
+        from dateList as tb
+    </select>
+
+    <!--<select id="allserviceUseCountByThismonth" resultType="java.util.LinkedHashMap">-->
+        <!--<foreach collection="dateList" item="item" separator="UNION ALL">-->
+            <!--select-->
+            <!--#{item} as key,-->
+            <!--count(*) as value-->
+            <!--from ko_layer_access_log-->
+            <!--where to_char(time, 'yyyy-MM-dd') = #{item}-->
+        <!--</foreach>-->
+    <!--</select>-->
+    <select id="allserviceUseCountByThismonth" resultType="java.util.LinkedHashMap">
+        <foreach collection="dateList" item="item" separator="UNION ALL">
+            select
+            #{item} as key,
+            count(*) as value
+            from ko_api_record_login
+            where (api = '/api/ko-user/mapLogin' or api ='/api/ko-user/adminLogin') and  to_char(time, 'yyyy-MM-dd') = #{item}
+        </foreach>
+    </select>
+
+    <!--<select id="allserviceUseCountByHistory" resultType="java.util.LinkedHashMap">-->
+        <!--<foreach collection="dateList" item="item" separator="UNION ALL">-->
+            <!--select-->
+            <!--#{item} as key,-->
+            <!--count(*) as value-->
+            <!--from ko_layer_access_log-->
+            <!--where to_char(time, 'yyyy-MM') = #{item}-->
+        <!--</foreach>-->
+    <!--</select>-->
+    <select id="allserviceUseCountByHistory" resultType="java.util.LinkedHashMap">
+        <foreach collection="dateList" item="item" separator="UNION ALL">
+            select
+            #{item} as key,
+            count(*) as value
+            from ko_api_record_login
+            where  (api = '/api/ko-user/mapLogin' or api ='/api/ko-user/adminLogin') and   to_char(time, 'yyyy-MM') = #{item}
+        </foreach>
+    </select>
+
+    <!--<select id="cityserviceUseCountByToday" resultType="java.util.LinkedHashMap">-->
+        <!--WITH dateList AS(-->
+            <!--select '00' as str-->
+            <!--union all select '01' as str-->
+            <!--union all select '02' as str-->
+            <!--union all select '03' as str-->
+            <!--union all select '04' as str-->
+            <!--union all select '05' as str-->
+            <!--union all select '06' as str-->
+            <!--union all select '07' as str-->
+            <!--union all select '08' as str-->
+            <!--union all select '09' as str-->
+            <!--union all select '10' as str-->
+            <!--union all select '11' as str-->
+            <!--union all select '12' as str-->
+            <!--union all select '13' as str-->
+            <!--union all select '14' as str-->
+            <!--union all select '15' as str-->
+            <!--union all select '16' as str-->
+            <!--union all select '17' as str-->
+            <!--union all select '18' as str-->
+            <!--union all select '19' as str-->
+            <!--union all select '20' as str-->
+            <!--union all select '21' as str-->
+            <!--union all select '22' as str-->
+            <!--union all select '23' as str-->
+        <!--)-->
+        <!--select tb.str as key,-->
+            <!--(-->
+            <!--select count(*) from ko_layer_access_log-->
+            <!--where to_char(time, 'yyyy-MM-dd HH24') = to_char(now(), 'yyyy-MM-dd ')||tb.str-->
+            <!--and layer_province_code=#{provinceCode}-->
+            <!--) as value-->
+        <!--from dateList as tb-->
+    <!--</select>-->
+    <!--<select id="cityserviceUseCountByThismonth" resultType="java.util.LinkedHashMap">-->
+        <!--<foreach collection="dateList" item="item" separator="UNION ALL">-->
+            <!--select-->
+            <!--#{item} as key,-->
+            <!--count(*) as value-->
+            <!--from ko_layer_access_log-->
+            <!--where to_char(time, 'yyyy-MM-dd') = #{item} and layer_province_code=#{provinceCode}-->
+        <!--</foreach>-->
+    <!--</select>-->
+    <!--<select id="cityserviceUseCountByHistory" resultType="java.util.LinkedHashMap">-->
+        <!--<foreach collection="dateList" item="item" separator="UNION ALL">-->
+            <!--select-->
+            <!--#{item} as key,-->
+            <!--count(*) as value-->
+            <!--from ko_layer_access_log-->
+            <!--where to_char(time, 'yyyy-MM') = #{item} and layer_province_code=#{provinceCode}-->
+        <!--</foreach>-->
+    <!--</select>-->
+
+
+    <select id="cityserviceUseCountByToday" resultType="java.util.LinkedHashMap">
+        WITH dateList AS(
+            select '00' as str
+            union all select '01' as str
+            union all select '02' as str
+            union all select '03' as str
+            union all select '04' as str
+            union all select '05' as str
+            union all select '06' as str
+            union all select '07' as str
+            union all select '08' as str
+            union all select '09' as str
+            union all select '10' as str
+            union all select '11' as str
+            union all select '12' as str
+            union all select '13' as str
+            union all select '14' as str
+            union all select '15' as str
+            union all select '16' as str
+            union all select '17' as str
+            union all select '18' as str
+            union all select '19' as str
+            union all select '20' as str
+            union all select '21' as str
+            union all select '22' as str
+            union all select '23' as str
+        )
+        select tb.str as key,
+            (
+            select count(*) from ko_api_record_login
+            left join ko_user on ko_api_record_login.account = ko_user.account
+            where to_char(time, 'yyyy-MM-dd HH24') = to_char(now(), 'yyyy-MM-dd ')||tb.str
+            and city_id=#{provinceCode}  AND  (api = '/api/ko-user/mapLogin' or api ='/api/ko-user/adminLogin')
+            ) as value
+        from dateList as tb
+    </select>
+    <select id="cityserviceUseCountByThismonth" resultType="java.util.LinkedHashMap">
+        <foreach collection="dateList" item="item" separator="UNION ALL">
+            select
+            #{item} as key,
+            count(*) as value
+            from ko_api_record_login
+            left join ko_user on ko_api_record_login.account = ko_user.account
+            where to_char(time, 'yyyy-MM-dd') = #{item} and city_id=#{provinceCode} AND  (api = '/api/ko-user/mapLogin' or api ='/api/ko-user/adminLogin')
+        </foreach>
+    </select>
+    <select id="cityserviceUseCountByHistory" resultType="java.util.LinkedHashMap">
+        <foreach collection="dateList" item="item" separator="UNION ALL">
+            select
+            #{item} as key,
+            count(*) as value
+            from ko_api_record_login
+            left join ko_user on ko_api_record_login.account = ko_user.account
+            where to_char(time, 'yyyy-MM') = #{item} and city_id=#{provinceCode} AND  (api = '/api/ko-user/mapLogin' or api ='/api/ko-user/adminLogin')
+        </foreach>
+    </select>
+</mapper>

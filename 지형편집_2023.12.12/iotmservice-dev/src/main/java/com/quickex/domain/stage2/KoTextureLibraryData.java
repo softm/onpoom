@@ -1,0 +1,35 @@
+package com.quickex.domain.stage2;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import java.util.Date;
+import com.baomidou.mybatisplus.annotation.TableId;
+import java.io.Serializable;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+public class KoTextureLibraryData implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    private String id;
+
+    private String userAccount;
+
+    private Date createTime;
+
+    private String imgName;
+
+    private String imgUrl;
+
+    private String imgType;
+
+    private Integer isPublic;
+
+    private String treeId;
+
+}

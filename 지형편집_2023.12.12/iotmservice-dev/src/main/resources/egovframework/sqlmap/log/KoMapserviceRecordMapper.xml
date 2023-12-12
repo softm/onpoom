@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quickex.mapper.log.KoMapserviceRecordMapper">
+
+    <select id="apiPag" resultType="java.util.LinkedHashMap">
+        select
+        ko_api_record.id as "id",
+        ko_api_record.account as "account",
+        (select item_name from ko_organization where ko_user.city_id = id) as "cityName",
+        (select item_name from ko_organization where ko_user.area_id = id) as "areaName",
+        (select item_name from ko_organization where ko_user.organization_id = id) as "organizationName",
+        (select item_name from ko_organization where ko_user.department_id = id) as "departmentName",
+        ko_api_record.api as "api",
+        ko_api_record.ip as "ip",
+        to_char(ko_api_record.time, 'yyyy-MM-dd HH24:MI:SS') "time"
+        FROM ko_api_record
+        left join ko_user on ko_api_record.account = ko_user.account
+        <where>
+            <if test="accessAccount != null and accessAccount != ''">
+                and ko_api_record.account like concat('%', #{accessAccount}, '%')
+            </if>
+            <if test="apiName != null and apiName != ''">
+                and ko_api_record.api like concat('%', #{apiName}, '%')
+            </if>
+        </where>
+        ORDER BY ko_api_record.time DESC
+    </select>
+
+    <select id="menuPag" resultType="java.util.LinkedHashMap">
+        select
+        ko_mapservice_record.id as "id",
+        ko_mapservice_record.user_account as "account",
+        (select item_name from ko_organization where ko_user.city_id = id) as "cityName",
+        (select item_name from ko_organization where ko_user.area_id = id) as "areaName",
+        (select item_name from ko_organization where ko_user.organization_id = id) as "organizationName",
+        (select item_name from ko_organization where ko_user.department_id = id) as "departmentName",
+        ko_mapservice_record.menu_path as "menuPath",
+        ko_mapservice_record.ip as "ip",
+        to_char(ko_mapservice_record.access_time, 'yyyy-MM-dd HH24:MI:SS') "time"
+        FROM ko_mapservice_record
+        left join ko_user on ko_mapservice_record.user_account = ko_user.account
+        <where>
+            <if test="accessAccount != null and accessAccount != ''">
+                and ko_mapservice_record.user_account like concat('%', #{accessAccount}, '%')
+            </if>
+            <if test="menuName != null and menuName != ''">
+                and ko_mapservice_record.menu_path like concat('%', #{menuName}, '%')
+            </if>
+        </where>
+        ORDER BY ko_mapservice_record.access_time DESC
+    </select>
+
+    <select id="accountPage" resultType="java.util.LinkedHashMap">
+        select account from ko_user order by create_time desc
+    </select>
+
+    <select id="menuPage" resultType="java.util.LinkedHashMap">
+        select id,menu_name as "app" from ko_menu where sys_type=2  and menu_type=2 order by order_num asc
+    </select>
+
+    <select id="getApiCountYear" resultType="java.lang.Integer">
+        select count(*) from ko_api_record where account = #{account} and to_char(time, 'yyyy-MM') = #{time}
+    </select>
+
+    <select id="getApiCountMonth" resultType="java.lang.Integer">
+        select count(*) from ko_api_record where account = #{account} and to_char(time, 'yyyy-MM-dd') = #{time}
+    </select>
+
+    <select id="getApiCountDay" resultType="java.lang.Integer">
+        select count(*) from ko_api_record where account = #{account} and to_char(time, 'yyyy-MM-dd HH24') = #{time}
+    </select>
+
+
+
+    <select id="getMenuCountYear" resultType="java.lang.Integer">
+        select count(*) from ko_mapservice_record where substring(menu_id from '[^>]*$') = #{menuId} and to_char(access_time, 'yyyy-MM') = #{time}
+    </select>
+
+    <select id="getMenuCountMonth" resultType="java.lang.Integer">
+        select count(*) from ko_mapservice_record where substring(menu_id from '[^>]*$') = #{menuId} and to_char(access_time, 'yyyy-MM-dd') = #{time}
+    </select>
+
+    <select id="getMenuCountDay" resultType="java.lang.Integer">
+        select count(*) from ko_mapservice_record where substring(menu_id from '[^>]*$') = #{menuId} and to_char(access_time, 'yyyy-MM-dd HH24') = #{time}
+    </select>
+
+    <delete id="deleteApiLog">
+        delete from ko_api_record where time &lt; (current_date - interval '6 months');
+    </delete>
+
+    <delete id="deleteLoginLog">
+        delete from ko_api_record_login where time &lt; (current_date - interval '6 months');
+    </delete>
+
+
+
+
+</mapper>
