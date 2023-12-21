@@ -1,0 +1,47 @@
+{
+  "msg": "성공적인 작업",
+  "code": 200,
+  "data": {
+      "current": 1,
+      "pages": 6,
+      "records": [
+          {
+              "id": "1734901037905186817",
+              "name": "테스트.태스크.01",
+              "number": "T23-00036",
+              "registTime": "2023-12-13 20:40:14",
+              "registUser": "LXP_manager"
+          },
+          {
+              "id": "1734460216319811585",
+              "name": "단지편집",
+              "number": "T23-00034",
+              "registTime": "2023-12-12 15:28:34",
+              "registUser": "LXP_manager"
+          },
+          {
+              "id": "1732624077304770562",
+              "name": "5445",
+              "number": "T23-00033",
+              "registTime": "2023-12-07 13:52:25",
+              "registUser": "devUser"
+          },
+          {
+              "id": "1732617964979105794",
+              "name": "123",
+              "number": "T23-00032",
+              "registTime": "2023-12-07 13:28:07",
+              "registUser": "devUser"
+          },
+          {
+              "id": "1732616400210112513",
+              "name": "123123",
+              "number": "T23-00031",
+              "registTime": "2023-12-07 13:21:54",
+              "registUser": "devUser"
+          }
+      ],
+      "size": 5,
+      "total": 29
+  }
+}

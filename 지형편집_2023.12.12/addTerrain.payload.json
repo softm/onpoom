@@ -1,0 +1,57 @@
+{
+  "taskId": "1734901037905186817",
+  "taskNumber": "T23-00036",
+  "polygon": {
+    "name": "테스트.태스크.01.지형",
+    "terrainType": "1",
+    "terrainSelect": "2",
+    "geom": "MULTIPOLYGON(((126.92615031270573 37.49893119986037,126.9299984834317 37.4997967745209,126.92878040350021 37.496551197806745,126.92615031270573 37.49893119986037)))",
+    "registUser": "LXP_manager",
+    "planeHeight": "3333",
+    "tunnelHeight": "",
+    "textureId": "",
+    "textureUrl": "",
+    "landNo": "",
+    "number": "",
+    "registTime": "2023-12-13"
+  },
+  "points": [
+    {
+      "number": 1,
+      "geom": "POINT(126.92615031270573 37.49893119986037)",
+      "terrainHeight": "21.18",
+      "editHeight": "0",
+      "resultHeight": "3311.82",
+      "normalDistance": "0",
+      "normalAngle": "0",
+      "countType": 1,
+      "elevation": "0",
+      "inletWidth": "0"
+    },
+    {
+      "number": 2,
+      "geom": "POINT(126.9299984834317 37.4997967745209)",
+      "terrainHeight": "25.09",
+      "editHeight": "0",
+      "resultHeight": "3307.91",
+      "normalDistance": "0",
+      "normalAngle": "0",
+      "countType": 1,
+      "elevation": "0",
+      "inletWidth": "0"
+    },
+    {
+      "number": 3,
+      "geom": "POINT(126.92878040350021 37.496551197806745)",
+      "terrainHeight": "30.13",
+      "editHeight": "0",
+      "resultHeight": "3302.87",
+      "normalDistance": "0",
+      "normalAngle": "0",
+      "countType": 1,
+      "elevation": "0",
+      "inletWidth": "0"
+    }
+  ],
+  "models": []
+}
