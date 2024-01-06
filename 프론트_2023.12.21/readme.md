@@ -47,8 +47,18 @@ npm install micro-cli -g
 #### # 빌드
 turbo run build --filter=master
 
-실행
+#### # 실행
 turbo run start --filter=master
 
 8000
 LXP_manager/lxpf4321!
+
+==============================
+
+##### # 문의내용
+  - ui전환 방법
+  - ui적용 방법 : 샘플
+  - put['resolve']의미?
+  - 메뉴 전환 방법.
+
+  
