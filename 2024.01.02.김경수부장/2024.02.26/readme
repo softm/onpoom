@@ -1,1 +1,74 @@
 ~~~
+
+    .ant-table-tbody > tr > td {
+      cursor: default !important;
+    }
+    
+/////////////////////
+
+import {
+  Modal,
+  message
+} from 'antd';
+const { confirm } = Modal;
+
+
+    if (radioValue == '') {
+      message.warning('pleace choose');
+    } else {
+      confirm({
+        title: '삭제 확인?',
+        icon: <ExclamationCircleOutlined />,
+        content:
+          '삭제하시겠습니까?',
+        okText: '확인',
+        okType: 'danger',
+        cancelText: '취소',
+        onOk() {
+            dispatch({
+              type: 'shpExport/handleDeteleshpExport',
+              payload: {
+                userCrltsId: radioValue,
+              },
+            });
+            setRadioValue('');
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
+    }
+
+
+
+
+    confirm({
+      title: '저장 확인?',
+      icon: <ExclamationCircleOutlined />,
+      content:
+        '저장하시겠습니까?',
+      okText: '확인',
+      okType: 'danger',
+      cancelText: '취소',
+      onOk() {
+        dispatch({
+          type: 'shpExport/handleSubmitData',
+          payload: {
+            areaList,
+            setcallback: () => {
+              console.log(11111);
+              dispatch({
+                type: 'sigPanel/setChildren',
+                payload: {
+                  isshow: false,
+                  children: <></>,
+                },
+              });
+            },
+          },
+        });
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
