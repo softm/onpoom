@@ -97,3 +97,83 @@ const { confirm } = Modal;
         console.log('Cancel');
       },
     });
+
+
+    ////////////////////////
+
+
+
+        if (entitiesPloy === null) {
+      console.log(handlePoint, 'handlePoint---');
+      message.warning('필지를 선택하세요11.');
+    } else {
+      confirm({
+        title: '분석 확인?',
+        icon: <ExclamationCircleOutlined />,
+        content: '분석하시겠습니까?',
+        okText: '확인',
+        okType: 'danger',
+        cancelText: '취소',
+        onOk() {
+          setIsVisible(true);
+          dispatch({
+            type: 'slopeAnalysis/setState',
+            payload: { loadingVisible: true },
+          });
+          setTimeout(() => {
+            dispatch({
+              type: 'slopeAnalysis/startAnalysis',
+              payload: {
+                width: inputValue ? inputValue : 10,
+                callback: (res, pirmit, pos) => {
+                  if (res == null) {
+                    Modal.warning({
+                      title: '알림',
+                      content:
+                        '영역설정 범위가 한계값을 초과하였습니다. 다시 설정하십시오.',
+                      centered: true,
+                    });
+                    setIsVisible(false);
+                    dispatch({
+                      type: 'slopeAnalysis/setState',
+                      payload: { loadingVisible: false },
+                    });
+                  } else {
+                    dispatch({
+                      type: 'slopeAnalysis/setState',
+                      payload: { polygonSource: res, polyPirmitSource: pirmit },
+                    });
+                    dispatch({
+                      type: 'slopeAnalysis/getPositionPUN',
+                      payload: { lng: pos.lng, lat: pos.lat },
+                    });
+                    dispatch({
+                      type: 'sigPanel/setChildren',
+                      payload: {
+                        isshow: true,
+                        children: <SlopeAnalysisResult></SlopeAnalysisResult>,
+                        styles: {
+                          width: '400px',
+                          position: 'fixed',
+                          left: '430px',
+                          top: '30px',
+                          zIndex: 1200,
+                          height: '700px',
+                        },
+                      },
+                    });
+                    setIsVisible(false);
+                    dispatch({
+                      type: 'slopeAnalysis/setState',
+                      payload: { loadingVisible: false },
+                    });
+                  }
+                },
+              },
+            });
+          }, 500);
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
