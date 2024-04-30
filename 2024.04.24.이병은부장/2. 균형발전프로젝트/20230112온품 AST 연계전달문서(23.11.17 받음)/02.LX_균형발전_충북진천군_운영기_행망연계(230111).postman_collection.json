@@ -1,0 +1,546 @@
+{
+	"info": {
+		"_postman_id": "9252cbf9-606c-47e0-929d-5535fad4a10a",
+		"name": "02.LX_균형발전_충북진천군_운영기_행망연계(230111)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000002",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"2\",\r\n    \"bobn\":\"0002\",\r\n    \"bubn\":\"0001\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000002",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000002"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000003",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"2\",\r\n    \"bobn\":\"0002\",\r\n    \"bubn\":\"0001\",\r\n    \"erasureType\":\"Y\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000003",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000003"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000004",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0357\",\r\n    \"bubn\":\"0001\",\r\n    \"cbldgSeqno\":\"Y\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000004",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000004"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000005",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25025\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0480\",\r\n    \"bubn\":\"0013\",\r\n    \"cbldgSeqno\":\"0002\",\r\n    \"dong\":\"101\",\r\n    \"flr\":\"1\",\r\n    \"ho\":\"101\",\r\n    \"sil\":\"\",\r\n    \"dnstGbn\":\"0\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000005",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000005"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000006",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0229\",\r\n    \"bubn\":\"0004\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000006",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000006"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000007",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0213\",\r\n    \"bubn\":\"0002\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000007",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000007"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000011",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0463\",\r\n    \"bubn\":\"0000\",\r\n    \"strYear\":\"2022\",\r\n    \"endYear\":\"2022\",\r\n    \"stdmt\":\"01\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000011",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000011"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000020",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0463\",\r\n    \"bubn\":\"0000\",\r\n    \"mapWidth\":\"200\",\r\n    \"mapHeight\":\"200\",\r\n    \"scale\":\"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000020",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000020"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000025",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0357\",\r\n    \"bubn\":\"0001\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000025",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000025"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000026",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0357\",\r\n    \"bubn\":\"0001\",\r\n    \"mapWidth\":\"800\",\r\n    \"mapHeight\":\"800\",\r\n    \"legendWidth\":\"100\",\r\n    \"legendHeight\":\"100\",\r\n    \"issScale\":\"1\",\r\n    \"restrictYn\":\"Y\",\r\n    \"jibnZoom\":\"N\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000026",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000026"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000027",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0479\",\r\n    \"bubn\":\"0000\",\r\n    \"srchGbn\":\"4\",\r\n    \"ucode\":\"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000027",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000027"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000032",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25025\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0480\",\r\n    \"bubn\":\"0013\",\r\n    \"dong\":\"\",\r\n    \"flr\":\"\",\r\n    \"ho\":\"\",\r\n    \"sil\":\"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000032",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000032"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000033",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"landLocCd\":\"25021\",\r\n    \"ledgGbn\":\"1\",\r\n    \"bobn\":\"0005\",\r\n    \"bubn\":\"0004\",\r\n    \"srchBgnYear\":\"2007\",\r\n    \"srchEndYear\":\"2022\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000033",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000033"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000037",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000037",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000037"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/kras/000038",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"layerCd\":\"LSMD_CONT_LDREG\",\r\n    \"fileType\":\"4\",\r\n    \"filePath\":\"/1/2/3\",\r\n    \"fileName\":\"test.shx\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/kras/000038",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"kras",
+						"000038"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/soap/soi201",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"fmlId\":\"4375025035102540003\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/soap/soi201",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"soap",
+						"soi201"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{cbjc-server}}/services/cbjc/link/soap/soi202",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"test\",\r\n    \"regnCode\":\"4375037022\",\r\n    \"lgGbn\":\"2\",\r\n    \"boJibn\":\"0003\",\r\n    \"buJibn\":\"0002\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cbjc-server}}/services/cbjc/link/soap/soi202",
+					"host": [
+						"{{cbjc-server}}"
+					],
+					"path": [
+						"services",
+						"cbjc",
+						"link",
+						"soap",
+						"soi202"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "cbjc-server",
+			"value": "http://10.10.20.10:12323",
+			"type": "default"
+		}
+	]
+}

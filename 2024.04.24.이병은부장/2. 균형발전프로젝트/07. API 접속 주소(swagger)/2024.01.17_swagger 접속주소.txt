@@ -1,0 +1,35 @@
+dt
+
+http://10.10.20.10:8123/services/swagger/swagger-ui/index.html
+
+bugi -> 부산기장
+
+http://10.10.20.10:12330/swagger-ui.html
+http://106.245.249.226:12330/swagger-ui.html - 당산
+
+cbjc -> 충북 진천
+
+http://10.10.20.10:12323/swagger-ui.html
+http://106.245.249.226:12323/swagger-ui.html - 당산
+
+gnnh -> 경남 남해
+
+http://10.10.20.10:12399/swagger-ui.html
+http://106.245.249.226:12399/swagger-ui.html - 당산
+
+jbwj ->전북 완주
+
+http://10.10.20.10:12324/swagger-ui.html
+http://106.245.249.226:12324/swagger-ui.html - 당산
+
+jngs -> 전남 곡성
+
+http://10.10.20.10:12329/swagger-ui.html
+http://106.245.249.226:12329/swagger-ui.html - 당산
+
+seyc -> 서울 양천
+
+http://10.10.20.10:12321/swagger-ui.html
+http://106.245.249.226:12321/swagger-ui.html - 당산
+
+입니다!
