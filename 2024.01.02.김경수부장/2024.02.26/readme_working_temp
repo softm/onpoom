@@ -1,4 +1,43 @@
+메뉴 직접 실행
+```
+// BottomPanel.tsx
+    // SOFTM TEST WORK
+    useEffect(() => {
+      setTimeout(()=>{
+        // dispatch({
+        //   type: 'comPanel/setChildren',
+        //   payload: {
+        //     isshow: true,
+        //     children: <FacilityManagement />,
+        //     styles: {
+        //       width: '600px',
+        //       height: '600px',
+        //       position: 'fixed',
+        //       marginTop: '30px',
+        //       top: '30px',
+        //       left: '10px',
+        //     },
+        //   },
+        // });
+        // dispatch({
+        //   type: 'comPanel/setChildren',
+        //   payload: {
+        //     isshow: true,
+        //     children: <CostCalculation />,
+        //     styles: {
+        //       width: '500px',
+        //       position: 'fixed',
+        //       marginTop: '30px',
+        //       top: '15px',
+        //       left: '10px',
+        //     },
+        //    }
+        //   });
+      },2000);
+    },[]);
 
+```
+========================================================================
 158 : 오류없음
 49,53,64,197 : 작업 안됨
 212 : 요건이 숫자만 입력하라는 요건이었음. <> LX메모 : 4  번에서 설정 버턴 클릭시  3  번의  정확한 입력 값이 아니면 입력 하라고 경고메세지 보여줘야 함. 예) 평슬라브 입력값은 숫자만 가능합니다.
