@@ -1,3 +1,7 @@
+LOD4참고
+/Users/softm/Work/monorepo/projects/master/src/BaseClass/ModelLayered/ModelLayered.ts
+
+===============================================================================================
 2024년05월03일
  - api확인 및 테스트
  - 화면작성 중 html 작업중
